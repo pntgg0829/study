@@ -46,7 +46,7 @@
         <div id="adminPanel" style="display:none; margin-top:20px;">
             <h3>👩‍🏫 教師後台</h3>
             <div class="flex" style="justify-content:space-between; flex-wrap:wrap;">
-                <button class="btn admin-action" data-action="manageStudent">📋 管理學生學科</button>
+                <button class="btn admin-action" data-action="manageStudent">📋 管理學生學科＆姓名</button>
                 <button class="btn admin-action" data-action="uploadNote">📘 上傳筆記＋自動趣味遊戲</button>
                 <button class="btn admin-action" data-action="manageNotes">✏️ 修改筆記標題</button>
                 <button class="btn admin-action" data-action="viewSubmissions">📊 查看所有提交記錄</button>
@@ -61,42 +61,59 @@
 </div>
 
 <script>
-    // ---------- 資料庫 ----------
+    // ---------- 學科全部繁體 ----------
+    const primarySubjects = ["中文","英文","數學","常識","人文","科學","音樂","體育","普通話"];
+    const secondarySubjects = ["中文","英文","數學","公民","科學","化學","物理","生物","經濟","企會管","地理","歷史","中史"];
+
+    // ---------- 學生資料 (姓名與學號完全正確) ----------
     let db = {
         students: [
-            { studentId: "S001", name: "Hannah", gradeType: "小學", subjects: ["中文","英文","數學","常識","人文","科學","音樂","體育","普通話"] },
-            { studentId: "S002", name: "Elvis", gradeType: "小學", subjects: ["中文","英文","數學","常識","人文","科學","音樂","體育","普通話"] },
-            { studentId: "S003", name: "Yannie", gradeType: "小學", subjects: ["中文","英文","數學","常識","人文","科學","音樂","體育","普通話"] },
-            { studentId: "S004", name: "Kobe", gradeType: "中學", subjects: ["中文","英文","數學","公民","科學","化學","物理","生物","經濟","企會管","地理","歷史","中史"] },
-            { studentId: "S005", name: "Katie", gradeType: "中學", subjects: ["中文","英文","數學","公民","科學","化學","物理","生物","經濟","企會管","地理","歷史","中史"] },
-            { studentId: "S006", name: "Kylie", gradeType: "中學", subjects: ["中文","英文","數學","公民","科學","化學","物理","生物","經濟","企會管","地理","歷史","中史"] },
-            { studentId: "S007", name: "Anna", gradeType: "中學", subjects: ["中文","英文","數學","公民","科學","化學","物理","生物","經濟","企會管","地理","歷史","中史"] },
-            { studentId: "S008", name: "噠熹", gradeType: "中學", subjects: ["中文","英文","數學","公民","科學","化學","物理","生物","經濟","企會管","地理","歷史","中史"] },
-            { studentId: "S009", name: "沁兒", gradeType: "中學", subjects: ["中文","英文","數學","公民","科學","化學","物理","生物","經濟","企會管","地理","歷史","中史"] },
-            { studentId: "S010", name: "Yannis", gradeType: "中學", subjects: ["中文","英文","數學","公民","科學","化學","物理","生物","經濟","企會管","地理","歷史","中史"] }
+            { studentId: "S001", name: "Hannah", gradeType: "小學", subjects: [...primarySubjects] },
+            { studentId: "S002", name: "Elvis", gradeType: "小學", subjects: [...primarySubjects] },
+            { studentId: "S003", name: "Yannie", gradeType: "小學", subjects: [...primarySubjects] },
+            { studentId: "S004", name: "Kobe", gradeType: "中學", subjects: [...secondarySubjects] },
+            { studentId: "S005", name: "Katie", gradeType: "中學", subjects: [...secondarySubjects] },
+            { studentId: "S006", name: "Kylie", gradeType: "中學", subjects: [...secondarySubjects] },
+            { studentId: "S007", name: "Anna", gradeType: "中學", subjects: [...secondarySubjects] },
+            { studentId: "S008", name: "噠熹", gradeType: "中學", subjects: [...secondarySubjects] },
+            { studentId: "S009", name: "沁兒", gradeType: "中學", subjects: [...secondarySubjects] },
+            { studentId: "S010", name: "Yannis", gradeType: "中學", subjects: [...secondarySubjects] }
         ],
         notes: [],
         exercises: [],
         submissions: []
     };
-    const primarySubjects = ["中文","英文","數學","常識","人文","科學","音樂","體育","普通話"];
-    const secondarySubjects = ["中文","英文","數學","公民","科學","化學","物理","生物","經濟","企會管","地理","歷史","中史"];
 
     function loadDB() {
         const saved = localStorage.getItem("teach_platform_db");
         if(saved) {
             try {
                 let parsed = JSON.parse(saved);
-                db = { ...db, ...parsed };
-                if(!db.submissions) db.submissions = [];
-                if(!db.exercises) db.exercises = [];
-                if(!db.notes) db.notes = [];
+                // 合併資料，保留既有學生但確保新結構
+                if(parsed.students) db.students = parsed.students;
+                if(parsed.notes) db.notes = parsed.notes;
+                if(parsed.exercises) db.exercises = parsed.exercises;
+                if(parsed.submissions) db.submissions = parsed.submissions;
             } catch(e) {}
         }
+        // 確保每個學生的學科是完整的（若為空則補預設）
+        db.students.forEach(s => {
+            if(!s.subjects || s.subjects.length===0) {
+                s.subjects = (s.gradeType === "小學") ? [...primarySubjects] : [...secondarySubjects];
+            }
+        });
         syncStorage();
     }
     function syncStorage() { localStorage.setItem("teach_platform_db", JSON.stringify(db)); }
 
+    // 輔助函數：更新學生姓名
+    function updateStudentName(studentId, newName) {
+        let student = db.students.find(s => s.studentId === studentId);
+        if(student) { student.name = newName; syncStorage(); return true; }
+        return false;
+    }
+
+    // 筆記與練習函數 (保持原有功能)
     function addNote(subject, title, content, autoGenGame = false) {
         let noteId = Date.now();
         let note = { id: noteId, subject, title, content, uploadDate: new Date().toISOString(), gameQuizId: null };
@@ -133,7 +150,6 @@
 
     let currentStudent = null;
     let currentSubject = null;
-
     function escapeHtml(str) { return String(str).replace(/[&<>]/g, function(m){ if(m==='&') return '&amp;'; if(m==='<') return '&lt;'; if(m==='>') return '&gt;'; return m;}); }
 
     function renderStudentSubjects() {
@@ -170,7 +186,7 @@
             html+= `<div class="note-item"><strong>${escapeHtml(n.title)}</strong><div style="font-size:14px; margin-top:8px;">${n.content}</div><small>${new Date(n.uploadDate).toLocaleString()}</small>`;
             if(n.gameQuizId) {
                 let quiz = db.exercises.find(e=>e.id === n.gameQuizId);
-                if(quiz) html+= `<div class="game-quiz" style="background:#fef9c3; border-radius:16px; padding:8px; margin-top:8px;">🎮 內建趣味小測驗：<button class="btn-sm" data-exid="${quiz.id}">開始遊戲測驗</button></div>`;
+                if(quiz) html+= `<div style="background:#fef9c3; border-radius:16px; padding:8px; margin-top:8px;">🎮 內建趣味小測驗：<button class="btn-sm" data-exid="${quiz.id}">開始遊戲測驗</button></div>`;
             }
             html+= `</div>`;
         });
@@ -202,7 +218,7 @@
         });
     }
 
-    function openExerciseModal(exercise) { /* 簡潔實作保留主要功能 */
+    function openExerciseModal(exercise) {
         const modalDiv = document.createElement('div');
         modalDiv.style.position = 'fixed'; modalDiv.style.top='0'; modalDiv.style.left='0'; modalDiv.style.width='100%'; modalDiv.style.height='100%';
         modalDiv.style.backgroundColor='rgba(0,0,0,0.5)'; modalDiv.style.display='flex'; modalDiv.style.alignItems='center'; modalDiv.style.justifyContent='center'; modalDiv.style.zIndex='1000';
@@ -239,12 +255,10 @@
             modalContent.querySelector('#closeRichBtn').addEventListener('click', closeModal);
             return;
         }
-        // 其他類型簡單提醒
         modalContent.innerHTML = `<h3>${escapeHtml(exercise.title)}</h3><p>此練習類型需在後台完整設定，目前僅展示。</p><button class="btn" onclick="this.closest('div').remove()">關閉</button>`;
-        // 實際可擴充，但核心登入問題已經解決
     }
 
-    // ---------- 教師後台函數 (已精簡但完整) ----------
+    // ---------- 教師後台 (包含修改學生姓名) ----------
     let adminAuthenticated = false;
     function requireAdmin(callback) {
         if(adminAuthenticated) { callback(); return; }
@@ -252,18 +266,44 @@
         if(pwd === "309418") { adminAuthenticated = true; callback(); }
         else { alert("密碼錯誤"); }
     }
+
     function renderAdminStudents() {
-        let html = `<h4>管理學生學科</h4>`;
+        let html = `<h4>管理學生學科＆姓名</h4>`;
         db.students.forEach(stu => {
             let allSub = (stu.gradeType === '小學' ? primarySubjects : secondarySubjects);
-            html += `<div style="border:1px solid #ddd;margin:12px;padding:12px;"><b>${stu.name} (${stu.studentId})</b> 當前學科: ${stu.subjects.join(', ')}<br><div class="flex">`;
+            html += `<div style="border:1px solid #ddd;margin:12px;padding:12px;border-radius:20px;">
+                        <div class="flex" style="justify-content:space-between;">
+                            <b>學號：${stu.studentId}</b>
+                            <div>姓名：<input type="text" id="name_${stu.studentId}" value="${escapeHtml(stu.name)}" style="width:150px; margin:0;">
+                            <button class="btn-sm updateNameBtn" data-sid="${stu.studentId}">修改姓名</button></div>
+                        </div>
+                        <div>當前學科：${stu.subjects.join(', ')}</div>
+                        <div class="flex" style="margin-top:10px;">`;
             allSub.forEach(sub => {
                 let checked = stu.subjects.includes(sub) ? 'checked' : '';
                 html += `<label><input type="checkbox" class="subCheck" data-sid="${stu.studentId}" value="${sub}" ${checked}> ${sub}</label> `;
             });
-            html += `</div><button class="btn-sm updateSubBtn" data-sid="${stu.studentId}">儲存修改</button></div>`;
+            html += `</div><button class="btn-sm updateSubBtn" data-sid="${stu.studentId}" style="margin-top:10px;">儲存學科修改</button></div>`;
         });
         document.getElementById("adminDynamicArea").innerHTML = html;
+        // 修改姓名事件
+        document.querySelectorAll('.updateNameBtn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                let sid = btn.getAttribute('data-sid');
+                let newName = document.getElementById(`name_${sid}`).value.trim();
+                if(newName) {
+                    if(updateStudentName(sid, newName)) {
+                        alert("學生姓名已更新");
+                        if(currentStudent && currentStudent.studentId === sid) {
+                            currentStudent.name = newName;
+                            document.getElementById("studentNameSpan").innerText = newName;
+                        }
+                        renderAdminStudents(); // 重新整理列表
+                    } else alert("更新失敗");
+                } else alert("姓名不可空白");
+            });
+        });
+        // 修改學科
         document.querySelectorAll('.updateSubBtn').forEach(btn => {
             btn.addEventListener('click', () => {
                 let sid = btn.getAttribute('data-sid');
@@ -274,10 +314,12 @@
                     syncStorage();
                     alert("學科已更新");
                     if(currentStudent && currentStudent.studentId===sid) renderStudentSubjects();
+                    renderAdminStudents(); // 刷新
                 }
             });
         });
     }
+
     function showUploadNoteUI() {
         let html = `<div><h4>上傳筆記</h4><input id="noteSubject" placeholder="學科"><input id="noteTitle" placeholder="標題"><textarea id="noteContent" placeholder="筆記內容"></textarea>
         <label><input type="checkbox" id="autoGameCheckbox"> 自動生成趣味遊戲</label><br><button id="saveNoteBtn" class="btn">上傳筆記</button></div>`;
@@ -377,10 +419,9 @@
         });
     }
 
-    // 全域初始化與事件綁定
+    // 初始化登入與後台
     function init() {
         loadDB();
-        // 登入按鈕
         const loginBtn = document.getElementById("loginBtn");
         const studentIdInput = document.getElementById("studentIdInput");
         loginBtn.onclick = function() {
@@ -392,24 +433,22 @@
                 document.getElementById("studentNameSpan").innerText = stu.name;
                 renderStudentSubjects();
             } else {
-                alert("學號不存在，請確認學號 (例如 S001 ~ S010)");
+                alert("學號不存在，請確認學號 (S001~S010)");
             }
         };
-        // 教師後台開關
         const toggleBtn = document.getElementById("toggleAdminBtn");
         const adminPanel = document.getElementById("adminPanel");
         toggleBtn.onclick = function() {
             if(adminPanel.style.display === "none") {
                 requireAdmin(() => {
                     adminPanel.style.display = "block";
-                    renderAdminStudents(); // 預設顯示管理學生
+                    renderAdminStudents();
                 });
             } else {
                 adminPanel.style.display = "none";
-                adminAuthenticated = false; // 關閉後台時清除認證
+                adminAuthenticated = false;
             }
         };
-        // 後台內部按鈕使用 data-action
         document.querySelectorAll('.admin-action').forEach(btn => {
             btn.addEventListener('click', (e) => {
                 e.preventDefault();

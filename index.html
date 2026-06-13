@@ -65,20 +65,22 @@
     const primarySubjects = ["中文","英文","數學","常識","人文","科學","音樂","體育","普通話"];
     const secondarySubjects = ["中文","英文","數學","公民","科學","化學","物理","生物","經濟","企會管","地理","歷史","中史"];
 
-    // ---------- 學生資料 (姓名與學號完全正確) ----------
+    // ---------- 正確的學生清單 (強制使用) ----------
+    const DEFAULT_STUDENTS = [
+        { studentId: "S001", name: "Hannah", gradeType: "小學", subjects: [...primarySubjects] },
+        { studentId: "S002", name: "Elvis", gradeType: "小學", subjects: [...primarySubjects] },
+        { studentId: "S003", name: "Yannie", gradeType: "小學", subjects: [...primarySubjects] },
+        { studentId: "S004", name: "Kobe", gradeType: "中學", subjects: [...secondarySubjects] },
+        { studentId: "S005", name: "Katie", gradeType: "中學", subjects: [...secondarySubjects] },
+        { studentId: "S006", name: "Kylie", gradeType: "中學", subjects: [...secondarySubjects] },
+        { studentId: "S007", name: "Anna", gradeType: "中學", subjects: [...secondarySubjects] },
+        { studentId: "S008", name: "噠熹", gradeType: "中學", subjects: [...secondarySubjects] },
+        { studentId: "S009", name: "沁兒", gradeType: "中學", subjects: [...secondarySubjects] },
+        { studentId: "S010", name: "Yannis", gradeType: "中學", subjects: [...secondarySubjects] }
+    ];
+
     let db = {
-        students: [
-            { studentId: "S001", name: "Hannah", gradeType: "小學", subjects: [...primarySubjects] },
-            { studentId: "S002", name: "Elvis", gradeType: "小學", subjects: [...primarySubjects] },
-            { studentId: "S003", name: "Yannie", gradeType: "小學", subjects: [...primarySubjects] },
-            { studentId: "S004", name: "Kobe", gradeType: "中學", subjects: [...secondarySubjects] },
-            { studentId: "S005", name: "Katie", gradeType: "中學", subjects: [...secondarySubjects] },
-            { studentId: "S006", name: "Kylie", gradeType: "中學", subjects: [...secondarySubjects] },
-            { studentId: "S007", name: "Anna", gradeType: "中學", subjects: [...secondarySubjects] },
-            { studentId: "S008", name: "噠熹", gradeType: "中學", subjects: [...secondarySubjects] },
-            { studentId: "S009", name: "沁兒", gradeType: "中學", subjects: [...secondarySubjects] },
-            { studentId: "S010", name: "Yannis", gradeType: "中學", subjects: [...secondarySubjects] }
-        ],
+        students: [],    // 會由 loadDB 強制填入 DEFAULT_STUDENTS
         notes: [],
         exercises: [],
         submissions: []
@@ -86,34 +88,53 @@
 
     function loadDB() {
         const saved = localStorage.getItem("teach_platform_db");
+        let oldStudents = null;
         if(saved) {
             try {
                 let parsed = JSON.parse(saved);
-                // 合併資料，保留既有學生但確保新結構
-                if(parsed.students) db.students = parsed.students;
+                if(parsed.students) oldStudents = parsed.students;
                 if(parsed.notes) db.notes = parsed.notes;
                 if(parsed.exercises) db.exercises = parsed.exercises;
                 if(parsed.submissions) db.submissions = parsed.submissions;
             } catch(e) {}
         }
-        // 確保每個學生的學科是完整的（若為空則補預設）
-        db.students.forEach(s => {
-            if(!s.subjects || s.subjects.length===0) {
-                s.subjects = (s.gradeType === "小學") ? [...primarySubjects] : [...secondarySubjects];
+        // 強制使用正確學生清單，但保留舊學生中可能已經修改過的姓名和學科
+        // 做法：以 DEFAULT_STUDENTS 為基底，若舊學生中有相同學號，則沿用其姓名與 subjects（保留老師的修改）
+        const newStudents = [];
+        for (let defaultStu of DEFAULT_STUDENTS) {
+            let existing = oldStudents ? oldStudents.find(s => s.studentId === defaultStu.studentId) : null;
+            if (existing) {
+                // 保留老師修改過的姓名和學科，但確保 gradeType 正確
+                newStudents.push({
+                    ...defaultStu,
+                    name: existing.name || defaultStu.name,
+                    subjects: (existing.subjects && existing.subjects.length) ? existing.subjects : defaultStu.subjects
+                });
+            } else {
+                newStudents.push({ ...defaultStu });
             }
-        });
+        }
+        db.students = newStudents;
         syncStorage();
     }
+
     function syncStorage() { localStorage.setItem("teach_platform_db", JSON.stringify(db)); }
 
-    // 輔助函數：更新學生姓名
+    // 更新學生姓名
     function updateStudentName(studentId, newName) {
         let student = db.students.find(s => s.studentId === studentId);
         if(student) { student.name = newName; syncStorage(); return true; }
         return false;
     }
 
-    // 筆記與練習函數 (保持原有功能)
+    // 更新學生學科
+    function updateStudentSubjects(studentId, newSubjects) {
+        let student = db.students.find(s => s.studentId === studentId);
+        if(student) { student.subjects = newSubjects; syncStorage(); return true; }
+        return false;
+    }
+
+    // 筆記與練習函數 (保持原有)
     function addNote(subject, title, content, autoGenGame = false) {
         let noteId = Date.now();
         let note = { id: noteId, subject, title, content, uploadDate: new Date().toISOString(), gameQuizId: null };
@@ -258,7 +279,7 @@
         modalContent.innerHTML = `<h3>${escapeHtml(exercise.title)}</h3><p>此練習類型需在後台完整設定，目前僅展示。</p><button class="btn" onclick="this.closest('div').remove()">關閉</button>`;
     }
 
-    // ---------- 教師後台 (包含修改學生姓名) ----------
+    // ---------- 教師後台 (支援修改姓名與學科) ----------
     let adminAuthenticated = false;
     function requireAdmin(callback) {
         if(adminAuthenticated) { callback(); return; }
@@ -298,7 +319,7 @@
                             currentStudent.name = newName;
                             document.getElementById("studentNameSpan").innerText = newName;
                         }
-                        renderAdminStudents(); // 重新整理列表
+                        renderAdminStudents(); // 刷新列表
                     } else alert("更新失敗");
                 } else alert("姓名不可空白");
             });
@@ -307,14 +328,11 @@
         document.querySelectorAll('.updateSubBtn').forEach(btn => {
             btn.addEventListener('click', () => {
                 let sid = btn.getAttribute('data-sid');
-                let student = db.students.find(s=>s.studentId===sid);
-                if(student) {
-                    let selected = Array.from(document.querySelectorAll(`.subCheck[data-sid="${sid}"]:checked`)).map(cb=>cb.value);
-                    student.subjects = selected;
-                    syncStorage();
+                let selected = Array.from(document.querySelectorAll(`.subCheck[data-sid="${sid}"]:checked`)).map(cb=>cb.value);
+                if(updateStudentSubjects(sid, selected)) {
                     alert("學科已更新");
-                    if(currentStudent && currentStudent.studentId===sid) renderStudentSubjects();
-                    renderAdminStudents(); // 刷新
+                    if(currentStudent && currentStudent.studentId === sid) renderStudentSubjects();
+                    renderAdminStudents();
                 }
             });
         });
@@ -419,7 +437,7 @@
         });
     }
 
-    // 初始化登入與後台
+    // 初始化
     function init() {
         loadDB();
         const loginBtn = document.getElementById("loginBtn");

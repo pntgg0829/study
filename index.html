@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>智学坊 - 家教综合教学平台</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: system-ui, 'Segoe UI', 'Noto Sans', sans-serif;
+        }
+        body {
+            background: #f1f5f9;
+            padding: 20px;
+        }
+        /* 全局容器 */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        /* 卡片样式 */
+        .card {
+            background: white;
+            border-radius: 24px;
+            padding: 24px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.05);
+            margin-bottom: 24px;
+        }
+        .btn {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 8px 18px;
+            border-radius: 40px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: 0.2s;
+            font-size: 14px;
+        }
+        .btn-outline {
+            background: white;
+            border: 1px solid #3b82f6;
+            color: #3b82f6;
+        }
+        .btn-outline:hover {
+            background: #eef2ff;
+        }
+        .btn-sm {
+            padding: 4px 12px;
+            font-size: 12px;
+        }
+        .flex {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+            align-items: center;
+        }
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        /* 左右栏布局 */
+        .split-pane {
+            display: flex;
+            gap: 24px;
+            flex-wrap: wrap;
+        }
+        .left-col {
+            flex: 1;
+            min-width: 250px;
+        }
+        .right-col {
+            flex: 1;
+            min-width: 250px;
+        }
+        textarea, input, select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #cbd5e1;
+            border-radius: 16px;
+            margin-top: 6px;
+            margin-bottom: 12px;
+        }
+        .subject-tag {
+            background: #e2e8f0;
+            padding: 6px 14px;
+            border-radius: 40px;
+            cursor: pointer;
+            transition: 0.1s;
+            display: inline-block;
+        }
+        .subject-tag.active {
+            background: #3b82f6;
+            color: white;
+        }
+        .note-item, .exercise-item {
+            background: #f8fafc;
+            border-radius: 20px;
+            padding: 12px;
+            margin-bottom: 12px;
+            border-left: 4px solid #3b82f6;
+        }
+        .upload-area {
+            border: 2px dashed #cbd5e1;
+            border-radius: 20px;
+            padding: 20px;
+            text-align: center;
+        }
+        .handwrite-canvas {
+            border: 1px solid #aaa;
+            border-radius: 16px;
+            background: white;
+            cursor: crosshair;
+            width: 100%;
+            height: 180px;
+        }
+        .admin-section {
+            margin-top: 30px;
+            border-top: 2px solid #ddd;
+            padding-top: 20px;
+        }
+        .record-item {
+            background: #f1f5f9;
+            margin: 8px 0;
+            padding: 12px;
+            border-radius: 16px;
+        }
+        @media (max-width: 700px) {
+            .split-pane { flex-direction: column; }
+            .grid-2 { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+<div class="container" id="app">
+    <!-- 登录/学生端视图 -->
+    <div id="studentView" class="card" style="display:block;">
+        <h2>📚 学生入口</h2>
+        <div class="flex">
+            <input type="text" id="studentIdInput" placeholder="请输入学号 (例如 S001)" style="width:200px;">
+            <button class="btn" id="loginBtn">登录 / 进入学习</button>
+        </div>
+        <div id="studentDashboard" style="margin-top: 20px; display:none;">
+            <h3>欢迎，<span id="studentNameSpan"></span> 同学</h3>
+            <div class="flex" id="subjectListArea" style="margin: 20px 0;"></div>
+            <div id="subjectContentArea"></div>
+        </div>
+    </div>
+
+    <!-- 教师后台区域 (隐藏，通过简单密码/按钮唤起) -->
+    <div class="card" style="margin-top:20px;">
+        <button id="toggleAdminBtn" class="btn btn-outline">🔐 教师后台管理 (点击展开)</button>
+        <div id="adminPanel" style="display:none; margin-top:20px;">
+            <h3>👩‍🏫 教师后台</h3>
+            <div class="flex" style="justify-content:space-between; flex-wrap:wrap;">
+                <button class="btn" id="manageStudentBtn">📋 管理学生学科</button>
+                <button class="btn" id="uploadNoteBtn">📘 上传笔记/练习 (自动整理)</button>
+                <button class="btn" id="viewSubmissionsBtn">📊 查看所有提交记录&录音</button>
+                <button class="btn" id="uploadChoiceFileBtn">📄 上传选择题文档(自动生成练习)</button>
+                <button class="btn" id="uploadListeningBtn">🎧 上传听力(中/英)</button>
+                <button class="btn" id="createReadingAloudBtn">🗣️ 新增朗读材料(中文朗读区)</button>
+            </div>
+            <div id="adminDynamicArea" style="margin-top: 24px;"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // ----------------------------- 模拟数据库 (localStorage持久化) ---------------------------------
+    let db = {
+        students: [  // 学号，姓名，学科数组，年级段
+            { studentId: "S001", name: "李小乐", gradeType: "小学", subjects: ["中文","英文","数学","常识"] },
+            { studentId: "S002", name: "王思睿", gradeType: "中学", subjects: ["中文","英文","数学","物理","化学"] }
+        ],
+        // 笔记: { id, subject, title, contentHtmlOrPath, uploadDate }
+        notes: [],
+        // 练习: { id, subject, type, title, config (json), correctAnswerMap, mediaUrl(听力/材料), createdAt }
+        exercises: [],
+        // 提交记录: { id, studentId, exerciseId, answers, score, audioUrl, submitDate, extra }
+        submissions: [],
+        // 朗读录音独立存储 (也可归入submissions)
+        nextId: { student:3, note:1, exercise:10, submission:1 }
+    };
+
+    function loadDB() {
+        const saved = localStorage.getItem("teach_platform_db");
+        if(saved) {
+            try{
+                let parsed = JSON.parse(saved);
+                db = {...db, ...parsed};
+                if(!db.submissions) db.submissions=[];
+                if(!db.exercises) db.exercises=[];
+                if(!db.notes) db.notes=[];
+                if(!db.students) db.students=[];
+            }catch(e){}
+        }
+        syncStorage();
+    }
+    function syncStorage() {
+        localStorage.setItem("teach_platform_db", JSON.stringify(db));
+    }
+
+    // 辅助函数
+    function addNote(subject, title, content) {
+        let note = { id: Date.now(), subject, title, content, uploadDate: new Date().toISOString() };
+        db.notes.push(note);
+        syncStorage();
+    }
+    function addExercise(exerciseObj) {
+        exerciseObj.id = Date.now();
+        db.exercises.push(exerciseObj);
+        syncStorage();
+    }
+    function addSubmission(sub) {
+        sub.id = Date.now();
+        db.submissions.push(sub);
+        syncStorage();
+    }
+
+    // 小学/中学学科全集
+    const primarySubjects = ["中文","英文","数学","常识","人文","科学","音乐","体育","普通话"];
+    const secondarySubjects = ["中文","英文","数学","公民","科学","化学","物理","生物","经济","企会管","地理","历史","中史"];
+
+    // 前端全局
+    let currentStudent = null;
+    let currentSubject = null;
+    let currentExerciseList = [];   // 当前学科练习
+
+    // 手写状态临时存储
+    let handwritingImageData = null; // 用于填充题canvas
+
+    // ---------- 渲染学生端学科 ----------
+    function renderStudentSubjects() {
+        if(!currentStudent) return;
+        let subjectsList = currentStudent.subjects || [];
+        const container = document.getElementById("subjectListArea");
+        if(!container) return;
+        container.innerHTML = subjectsList.map(sub => `<span class="subject-tag" data-sub="${sub}">${sub}</span>`).join(' ');
+        document.querySelectorAll('.subject-tag').forEach(el => {
+            el.addEventListener('click', (e) => {
+                document.querySelectorAll('.subject-tag').forEach(c=>c.classList.remove('active'));
+                el.classList.add('active');
+                currentSubject = el.getAttribute('data-sub');
+                renderSubjectDetails(currentSubject);
+            });
+        });
+        if(subjectsList.length) {
+            currentSubject = subjectsList[0];
+            renderSubjectDetails(currentSubject);
+            document.querySelector('.subject-tag')?.classList.add('active');
+        } else {
+            document.getElementById("subjectContentArea").innerHTML = "<p>暂无学科，请联系老师添加。</p>";
+        }
+    }
+
+    // 展示学科下的笔记+练习
+    function renderSubjectDetails(subject) {
+        const container = document.getElementById("subjectContentArea");
+        if(!container) return;
+        // 过滤笔记
+        let notes = db.notes.filter(n => n.subject === subject);
+        let exercises = db.exercises.filter(e => e.subject === subject);
+        currentExerciseList = exercises;
+        let html = `<div class="split-pane"><div class="left-col"><h4>📒 笔记区</h4>`;
+        if(notes.length===0) html+= `<p>暂无笔记</p>`;
+        notes.forEach(n => {
+            html+= `<div class="note-item"><strong>${n.title}</strong><div style="font-size:14px; margin-top:8px;">${n.content}</div><small>${new Date(n.uploadDate).toLocaleString()}</small></div>`;
+        });
+        html+= `</div><div class="right-col"><h4>✏️ 练习区</h4>`;
+        if(exercises.length===0) html+= `<p>暂无练习</p>`;
+        exercises.forEach(ex => {
+            let typeName = "";
+            if(ex.type==='choice') typeName='选择题';
+            else if(ex.type==='fill') typeName='填充题';
+            else if(ex.type==='long') typeName='长问答';
+            else if(ex.type==='reading') typeName='阅读理解';
+            else if(ex.type==='data') typeName='资料题';
+            else if(ex.type==='listening_cn') typeName='中文聆听';
+            else if(ex.type==='listening_en') typeName='英文聆听';
+            else if(ex.type==='reading_aloud') typeName='中文朗读';
+            html+= `<div class="exercise-item"><strong>📌 ${ex.title}</strong> (${typeName}) 
+                    <button class="btn btn-sm" data-exid="${ex.id}" style="margin-left:10px;">开始练习</button></div>`;
+        });
+        html+= `</div></div>`;
+        container.innerHTML = html;
+        // 绑定练习事件
+        document.querySelectorAll('[data-exid]').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                let exId = parseInt(btn.getAttribute('data-exid'));
+                let exercise = db.exercises.find(e=>e.id === exId);
+                if(exercise) openExerciseModal(exercise);
+            });
+        });
+    }
+
+    // 模态框动态生成练习 (根据不同题型)
+    function openExerciseModal(exercise) {
+        const modalDiv = document.createElement('div');
+        modalDiv.style.position = 'fixed'; modalDiv.style.top='0'; modalDiv.style.left='0'; modalDiv.style.width='100%'; modalDiv.style.height='100%';
+        modalDiv.style.backgroundColor='rgba(0,0,0,0.5)'; modalDiv.style.display='flex'; modalDiv.style.alignItems='center'; modalDiv.style.justifyContent='center'; modalDiv.style.zIndex='1000';
+        const modalContent = document.createElement('div');
+        modalContent.style.backgroundColor='white'; modalContent.style.width='90%'; modalContent.style.maxWidth='900px'; modalContent.style.maxHeight='85vh'; modalContent.style.overflow='auto';
+        modalContent.style.borderRadius='28px'; modalContent.style.padding='24px';
+        modalDiv.appendChild(modalContent);
+        document.body.appendChild(modalDiv);
+
+        function closeModal() { modalDiv.remove(); }
+
+        let innerHtml = `<h3>${exercise.title}</h3>`;
+        if(exercise.type === 'choice') {
+            let qs = exercise.config.questions || [];
+            innerHtml += `<form id="choiceForm">`;
+            qs.forEach((q, idx) => {
+                innerHtml += `<div style="margin-bottom:20px;"><p><strong>${idx+1}. ${q.text}</strong></p>`;
+                q.options.forEach(opt => {
+                    innerHtml += `<label><input type="radio" name="q${idx}" value="${opt}"> ${opt}</label><br>`;
+                });
+                innerHtml += `</div>`;
+            });
+            innerHtml += `<button type="submit" class="btn">提交答案并评分</button></form>`;
+            modalContent.innerHTML = innerHtml;
+            modalContent.querySelector('#choiceForm').addEventListener('submit', (e) => {
+                e.preventDefault();
+                let score = 0; let total = exercise.config.questions.length;
+                for(let i=0;i<total;i++) {
+                    let selected = document.querySelector(`input[name="q${i}"]:checked`);
+                    if(selected && selected.value === exercise.config.answers[i]) score++;
+                }
+                let resultMsg = `得分: ${score}/${total}`;
+                addSubmission({ studentId:currentStudent.studentId, exerciseId:exercise.id, answers: "选择题答案", score:score, submitDate:new Date().toISOString() });
+                alert(resultMsg);
+                closeModal();
+            });
+        } 
+        else if (exercise.type === 'fill') {
+            innerHtml += `<div><p>${exercise.config.questionText}</p>`;
+            innerHtml += `<div><label><input type="radio" name="fillMode" value="typing" checked> 打字提交</label> <label><input type="radio" name="fillMode" value="handwrite"> 手写体(绘画板)</label></div>`;
+            innerHtml += `<div id="fillInputArea"><textarea id="fillTyping" rows="3" placeholder="请输入答案..."></textarea></div>`;
+            innerHtml += `<canvas id="handCanvas" class="handwrite-canvas" style="display:none;"></canvas><div><button id="clearCanvasBtn" style="display:none;">清空手写</button></div>`;
+            innerHtml += `<button id="submitFillBtn" class="btn">提交答案</button></div>`;
+            modalContent.innerHTML = innerHtml;
+            let canvas = modalContent.querySelector('#handCanvas');
+            let ctx = canvas?.getContext('2d');
+            let drawing = false;
+            function initCanvas() {
+                if(!canvas) return;
+                canvas.width = canvas.clientWidth; canvas.height = canvas.clientHeight;
+                ctx.fillStyle='white'; ctx.fillRect(0,0,canvas.width,canvas.height);
+                ctx.strokeStyle='black'; ctx.lineWidth=2;
+                canvas.addEventListener('mousedown',()=>drawing=true);
+                canvas.addEventListener('mouseup',()=>drawing=false);
+                canvas.addEventListener('mousemove',(e)=>{
+                    if(!drawing)return; let rect=canvas.getBoundingClientRect(); let x=e.clientX-rect.left; let y=e.clientY-rect.top; ctx.lineTo(x,y); ctx.stroke(); ctx.beginPath(); ctx.moveTo(x,y);
+                });
+                canvas.addEventListener('touchmove',(e)=>{ e.preventDefault(); let rect=canvas.getBoundingClientRect(); let touch=e.touches[0]; let x=touch.clientX-rect.left; let y=touch.clientY-rect.top; ctx.lineTo(x,y); ctx.stroke(); ctx.beginPath(); ctx.moveTo(x,y); });
+                canvas.addEventListener('touchstart',(e)=>{ e.preventDefault(); drawing=true; });
+                canvas.addEventListener('touchend',()=>drawing=false);
+            }
+            const radioTyping = modalContent.querySelector('input[value="typing"]');
+            const radioHand = modalContent.querySelector('input[value="handwrite"]');
+            const typingArea = modalContent.querySelector('#fillTyping');
+            const handCanvasDiv = modalContent.querySelector('#handCanvas');
+            const clearBtn = modalContent.querySelector('#clearCanvasBtn');
+            function switchMode() {
+                if(radioTyping.checked) {
+                    typingArea.style.display = 'block';
+                    handCanvasDiv.style.display = 'none';
+                    clearBtn.style.display = 'none';
+                } else {
+                    typingArea.style.display = 'none';
+                    handCanvasDiv.style.display = 'block';
+                    clearBtn.style.display = 'inline-block';
+                    setTimeout(()=>{ if(canvas) { canvas.width = canvas.clientWidth; canvas.height=canvas.clientHeight; initCanvas(); }}, 50);
+                }
+            }
+            radioTyping.addEventListener('change',switchMode);
+            radioHand.addEventListener('change',switchMode);
+            if(clearBtn) clearBtn.addEventListener('click',()=>{ if(ctx){ctx.fillStyle='white'; ctx.fillRect(0,0,canvas.width,canvas.height); ctx.fillStyle='black';} });
+            switchMode();
+            modalContent.querySelector('#submitFillBtn').addEventListener('click',()=>{
+                let answerText = "";
+                if(radioTyping.checked) answerText = typingArea.value;
+                else {
+                    let dataURL = canvas.toDataURL();
+                    answerText = "[手写图片] " + dataURL.substring(0,80)+"...";
+                    // 实际存储整体图片数据，为简化展示部分。
+                }
+                let autoScore = (exercise.config.correctAnswer && answerText.includes(exercise.config.correctAnswer)) ? 100 : 0;
+                addSubmission({ studentId:currentStudent.studentId, exerciseId:exercise.id, answers: answerText, score:autoScore, submitDate:new Date().toISOString() });
+                alert(`填充题已提交，系统自动评分: ${autoScore}/100 (简单包含匹配)`);
+                closeModal();
+            });
+        }
+        else if (exercise.type === 'long') {
+            innerHtml += `<p>${exercise.config.question}</p><textarea id="longAnswer" rows="5" placeholder="请输入长问答..."></textarea><button id="submitLong" class="btn">提交答案</button>`;
+            modalContent.innerHTML = innerHtml;
+            modalContent.querySelector('#submitLong').addEventListener('click',()=>{
+                let ans = modalContent.querySelector('#longAnswer').value;
+                addSubmission({ studentId:currentStudent.studentId, exerciseId:exercise.id, answers: ans, score:null, submitDate:new Date().toISOString() });
+                alert("答案已提交，等待老师批阅。");
+                closeModal();
+            });
+        }
+        else if (exercise.type === 'reading' || exercise.type === 'data') {
+            let leftText = exercise.config.leftText;
+            let rightQuestions = exercise.config.questionsHtml;
+            innerHtml = `<div class="split-pane"><div class="left-col"><strong>${exercise.type==='reading'?'📖 文章':'📊 资料'}</strong><div style="background:#f9f9f9;padding:12px;">${leftText}</div></div>`;
+            innerHtml += `<div class="right-col"><strong>📝 题目</strong><div id="readingQuestions">${rightQuestions}</div><button id="submitReadingBtn" class="btn">提交答案</button></div></div>`;
+            modalContent.innerHTML = innerHtml;
+            modalContent.querySelector('#submitReadingBtn').addEventListener('click',()=>{
+                let answers = {};
+                document.querySelectorAll('.reading-answer').forEach(inp=>{ answers[inp.name] = inp.value; });
+                addSubmission({ studentId:currentStudent.studentId, exerciseId:exercise.id, answers: JSON.stringify(answers), score:null, submitDate:new Date().toISOString() });
+                alert("阅读理解答案已提交");
+                closeModal();
+            });
+        }
+        else if (exercise.type === 'listening_cn' || exercise.type === 'listening_en') {
+            let audioUrl = exercise.config.audioUrl;
+            let questions = exercise.config.questionsList || [];
+            innerHtml = `<div><audio controls src="${audioUrl}" style="width:100%;"></audio><div>`;
+            questions.forEach((q,idx)=>{
+                innerHtml+=`<p>${idx+1}. ${q.text}</p><input type="text" id="listenAns${idx}" placeholder="你的答案"><br>`;
+            });
+            innerHtml+=`<button id="submitListen" class="btn">提交听力答案</button></div>`;
+            modalContent.innerHTML = innerHtml;
+            modalContent.querySelector('#submitListen').addEventListener('click',()=>{
+                let ans=[];
+                questions.forEach((_,idx)=>ans.push(modalContent.querySelector(`#listenAns${idx}`).value));
+                addSubmission({ studentId:currentStudent.studentId, exerciseId:exercise.id, answers:JSON.stringify(ans), score:null, submitDate:new Date().toISOString() });
+                alert("听力答案已提交");
+                closeModal();
+            });
+        }
+        else if (exercise.type === 'reading_aloud') {
+            let material = exercise.config.readingText;
+            innerHtml = `<div><p><strong>朗读材料：</strong></p><div style="background:#f0f0f0;padding:12px;">${material}</div>`;
+            innerHtml += `<button id="startRecordBtn" class="btn">🎙️ 开始录音</button> <button id="stopRecordBtn" class="btn-outline btn" disabled>停止并提交</button>`;
+            innerHtml += `<div id="recordingStatus">准备就绪</div><div id="scoreDisplay"></div>`;
+            modalContent.innerHTML = innerHtml;
+            let mediaRecorder; let audioChunks=[];
+            let startBtn = modalContent.querySelector('#startRecordBtn');
+            let stopBtn = modalContent.querySelector('#stopRecordBtn');
+            let statusDiv = modalContent.querySelector('#recordingStatus');
+            let scoreDiv = modalContent.querySelector('#scoreDisplay');
+            startBtn.onclick = async ()=>{
+                let stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                mediaRecorder = new MediaRecorder(stream);
+                audioChunks=[];
+                mediaRecorder.ondataavailable = event => audioChunks.push(event.data);
+                mediaRecorder.onstop = async ()=>{
+                    let audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+                    let audioUrl = URL.createObjectURL(audioBlob);
+                    // 模拟自动评分：基于Web Speech API 语音识别对比原文 (仅演示)
+                    if('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+                        let SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+                        let recognition = new SpeechRecognition();
+                        recognition.lang = 'zh-CN';
+                        recognition.interimResults = false;
+                        recognition.onresult = (event) => {
+                            let transcript = event.results[0][0].transcript;
+                            let similarity = computeSimilarity(transcript, material);
+                            let scoreVal = Math.min(100, Math.floor(similarity*100));
+                            scoreDiv.innerHTML = `🎤 识别文本: "${transcript}" <br> 自动评分: ${scoreVal}/100 (基于文本匹配)`;
+                            // 保存录音数据URL和评分
+                            addSubmission({ studentId:currentStudent.studentId, exerciseId:exercise.id, answers: `朗读音频:${audioUrl} 识别文本:${transcript}`, score:scoreVal, audioUrl:audioUrl, submitDate:new Date().toISOString() });
+                            alert(`朗读已提交，评分 ${scoreVal}/100`);
+                            closeModal();
+                        };
+                        recognition.start();
+                    } else {
+                        scoreDiv.innerHTML = "浏览器不支持语音识别，评分暂无法自动计算，但已录音保存。";
+                        addSubmission({ studentId:currentStudent.studentId, exerciseId:exercise.id, answers: `录音文件URL:${audioUrl}`, score:null, audioUrl:audioUrl, submitDate:new Date().toISOString() });
+                        alert("朗读录音已提交(未评分)");
+                        closeModal();
+                    }
+                    stream.getTracks().forEach(track=>track.stop());
+                };
+                mediaRecorder.start();
+                statusDiv.innerText = "录音中... 请朗读材料";
+                startBtn.disabled = true;
+                stopBtn.disabled = false;
+            };
+            stopBtn.onclick = ()=>{
+                if(mediaRecorder && mediaRecorder.state !== 'inactive') mediaRecorder.stop();
+                statusDiv.innerText = "处理中...";
+                stopBtn.disabled = true;
+            };
+        }
+        function computeSimilarity(str1, str2){
+            let s1=str1.replace(/\s/g,''), s2=str2.replace(/\s/g,'');
+            let len = Math.max(s1.length, s2.length);
+            if(len===0) return 0;
+            let same=0; for(let i=0;i<Math.min(s1.length, s2.length);i++) if(s1[i]===s2[i]) same++;
+            return same/len;
+        }
+    }
+
+    // 教师后台简易渲染
+    function renderAdminStudents() {
+        let html = `<h4>管理学生学科</h4>`;
+        db.students.forEach(stu=>{
+            let allSub = (stu.gradeType === '小学'?primarySubjects:secondarySubjects);
+            html+=`<div style="border:1px solid #ddd;margin:12px;padding:12px;"><b>${stu.name} (${stu.studentId})</b> 当前学科: ${stu.subjects.join(', ')}<br>`;
+            html+=`<div class="flex">`;
+            allSub.forEach(sub=>{
+                let checked = stu.subjects.includes(sub)?'checked':'';
+                html+=`<label><input type="checkbox" class="subCheck" data-sid="${stu.studentId}" value="${sub}" ${checked}> ${sub}</label> `;
+            });
+            html+=`</div><button class="btn-sm updateSubBtn" data-sid="${stu.studentId}">保存学科修改</button></div>`;
+        });
+        document.getElementById("adminDynamicArea").innerHTML = html;
+        document.querySelectorAll('.updateSubBtn').forEach(btn=>{
+            btn.addEventListener('click',(e)=>{
+                let sid = btn.getAttribute('data-sid');
+                let student = db.students.find(s=>s.studentId===sid);
+                if(student){
+                    let selected = Array.from(document.querySelectorAll(`.subCheck[data-sid="${sid}"]:checked`)).map(cb=>cb.value);
+                    student.subjects = selected;
+                    syncStorage();
+                    alert("学科已更新！");
+                    if(currentStudent && currentStudent.studentId===sid) renderStudentSubjects();
+                }
+            });
+        });
+    }
+    function showUploadNoteUI(){
+        let html=`<div><h4>上传笔记/练习(自动归类)</h4><input id="noteSubject" placeholder="学科名(如中文)"><input id="noteTitle" placeholder="标题"><textarea id="noteContent" placeholder="笔记内容或链接"></textarea><button id="saveNoteBtn" class="btn">上传笔记</button><hr><h4>新增自定义练习(选择题/填充等)</h4><input id="exSubject" placeholder="学科"><input id="exTitle" placeholder="练习名称"><select id="exType"><option value="choice">选择题(JSON结构)</option><option value="long">长问答</option><option value="fill">填充题</option><option value="reading">阅读理解(左右栏)</option><option value="data">资料题</option></select><textarea id="exConfig" placeholder="配置JSON (选择题示范: {&#34;questions&#34;:[{&#34;text&#34;:&#34;题目1&#34;,&#34;options&#34;:[&#34;A&#34;,&#34;B&#34;],&#34;answer&#34;:&#34;A&#34;}]} )"></textarea><button id="createExBtn" class="btn">创建练习</button></div>`;
+        document.getElementById("adminDynamicArea").innerHTML = html;
+        document.getElementById("saveNoteBtn")?.addEventListener('click',()=>{
+            let sub=document.getElementById("noteSubject").value, title=document.getElementById("noteTitle").value, cont=document.getElementById("noteContent").value;
+            if(sub && title) { addNote(sub,title,cont); alert("笔记已上传"); } else alert("请填写学科和标题");
+        });
+        document.getElementById("createExBtn")?.addEventListener('click',()=>{
+            let subject=document.getElementById("exSubject").value, title=document.getElementById("exTitle").value, type=document.getElementById("exType").value, configTxt=document.getElementById("exConfig").value;
+            try{
+                let config=JSON.parse(configTxt);
+                addExercise({ subject, title, type, config, createdAt:new Date().toISOString() });
+                alert("练习创建成功!");
+            }catch(e){ alert("JSON格式错误"); }
+        });
+    }
+    function showSubmissions(){
+        let recs = db.submissions.filter(s=>true);
+        let html = `<h4>所有学生提交记录 (含录音材料)</h4>`;
+        recs.forEach(r=>{
+            let stu = db.students.find(s=>s.studentId===r.studentId) || {name:r.studentId};
+            let ex = db.exercises.find(e=>e.id===r.exerciseId) || {title:"未知练习"};
+            html+=`<div class="record-item"><b>${stu.name}(${r.studentId})</b> - 练习:${ex.title}<br>答案:${r.answers?.substring(0,100)}<br>得分:${r.score??'待批阅'} 日期:${new Date(r.submitDate).toLocaleString()}`;
+            if(r.audioUrl) html+=`<br><audio controls src="${r.audioUrl}"></audio>`;
+            html+=`</div>`;
+        });
+        document.getElementById("adminDynamicArea").innerHTML = html;
+    }
+    function uploadChoiceFile(){
+        let html=`<div><h4>上传选择题文档(CSV格式: 题目,选项A,选项B,选项C,选项D,答案)</h4><input type="file" id="choiceCsvFile" accept=".csv,.txt"><button id="parseChoiceBtn" class="btn">解析生成练习</button></div>`;
+        document.getElementById("adminDynamicArea").innerHTML = html;
+        document.getElementById("parseChoiceBtn")?.addEventListener('click',()=>{
+            let file = document.getElementById("choiceCsvFile").files[0];
+            if(!file) return;
+            let reader = new FileReader();
+            reader.onload = function(e){
+                let text = e.target.result;
+                let lines = text.split("\n");
+                let questions=[], answers=[];
+                for(let line of lines){
+                    let parts = line.split(",");
+                    if(parts.length>=6){
+                        let qText=parts[0], opts=parts.slice(1,5), ans=parts[5].trim();
+                        questions.push({text:qText, options:opts});
+                        answers.push(ans);
+                    }
+                }
+                let config = {questions, answers};
+                addExercise({ subject:"通用", title:"批量选择题-"+Date.now(), type:"choice", config, createdAt:new Date().toISOString() });
+                alert("已生成选择题练习，学科为'通用'，请在学科设置中查看");
+            };
+            reader.readAsText(file);
+        });
+    }
+    function uploadListeningUI(){
+        let html=`<div><h4>上传听力 (中文/英文)</h4><select id="listenLang"><option value="listening_cn">中文聆听</option><option value="listening_en">英文聆听</option></select><input type="text" id="listenTitle" placeholder="标题"><input type="file" id="audioFile" accept="audio/*"><textarea id="listenQuestions" placeholder="题目列表JSON格式如 [{\"text\":\"问题1\"}]"></textarea><button id="createListenBtn" class="btn">创建听力练习</button></div>`;
+        document.getElementById("adminDynamicArea").innerHTML = html;
+        document.getElementById("createListenBtn")?.addEventListener('click',()=>{
+            let type=document.getElementById("listenLang").value, title=document.getElementById("listenTitle").value;
+            let file=document.getElementById("audioFile").files[0];
+            let qJson=document.getElementById("listenQuestions").value;
+            if(file && title){
+                let url = URL.createObjectURL(file);
+                let questionsList = JSON.parse(qJson);
+                addExercise({ subject:"通用", title, type, config:{audioUrl:url, questionsList}, createdAt:new Date().toISOString() });
+                alert("听力练习已创建");
+            }else alert("请填写完整");
+        });
+    }
+    function createAloudMaterial(){
+        let html=`<div><h4>新增中文朗读材料</h4><input id="aloudSubject" placeholder="学科(中文)"><input id="aloudTitle" placeholder="朗读标题"><textarea id="aloudText" placeholder="朗读原文内容"></textarea><button id="saveAloudBtn" class="btn">保存朗读练习</button></div>`;
+        document.getElementById("adminDynamicArea").innerHTML = html;
+        document.getElementById("saveAloudBtn")?.addEventListener('click',()=>{
+            let sub=document.getElementById("aloudSubject").value, title=document.getElementById("aloudTitle").value, text=document.getElementById("aloudText").value;
+            if(sub && title && text) addExercise({ subject:sub, title, type:"reading_aloud", config:{readingText:text}, createdAt:new Date().toISOString() });
+            alert("朗读练习已创建");
+        });
+    }
+    // 绑定全局事件
+    function init(){
+        loadDB();
+        document.getElementById("loginBtn").onclick = ()=>{
+            let sid = document.getElementById("studentIdInput").value.trim();
+            let stu = db.students.find(s=>s.studentId===sid);
+            if(stu){
+                currentStudent = stu;
+                document.getElementById("studentDashboard").style.display = "block";
+                document.getElementById("studentNameSpan").innerText = stu.name;
+                renderStudentSubjects();
+            } else alert("学号不存在，请联系老师添加。");
+        };
+        let adminVisible=false;
+        document.getElementById("toggleAdminBtn").onclick = ()=>{
+            adminVisible=!adminVisible;
+            document.getElementById("adminPanel").style.display = adminVisible?"block":"none";
+            if(adminVisible) renderAdminStudents();
+        };
+        document.getElementById("manageStudentBtn").onclick = ()=>renderAdminStudents();
+        document.getElementById("uploadNoteBtn").onclick = ()=>showUploadNoteUI();
+        document.getElementById("viewSubmissionsBtn").onclick = ()=>showSubmissions();
+        document.getElementById("uploadChoiceFileBtn").onclick = ()=>uploadChoiceFile();
+        document.getElementById("uploadListeningBtn").onclick = ()=>uploadListeningUI();
+        document.getElementById("createReadingAloudBtn").onclick = ()=>createAloudMaterial();
+    }
+    init();
+</script>
+</body>
+</html>

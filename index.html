@@ -1,0 +1,2028 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Miss PAN Learning Hub｜彭老師互動學習平台</title>
+    <style>
+        :root{
+            --bg1:#eef2ff;--bg2:#fdf2f8;--bg3:#ecfeff;--ink:#0f172a;--muted:#64748b;
+            --brand:#6366f1;--brand2:#06b6d4;--accent:#f97316;--good:#10b981;--danger:#ef4444;
+            --card:rgba(255,255,255,.92);--line:#e2e8f0;--shadow:0 18px 45px rgba(15,23,42,.10);
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: Inter, system-ui, 'Segoe UI', 'Microsoft JhengHei', sans-serif; }
+        body { min-height:100vh; color:var(--ink); background:
+            radial-gradient(circle at top left, rgba(99,102,241,.22), transparent 28%),
+            radial-gradient(circle at 85% 10%, rgba(6,182,212,.18), transparent 30%),
+            linear-gradient(135deg,var(--bg1),var(--bg2) 55%,var(--bg3)); padding: 20px; }
+        .container { max-width: 1420px; margin: 0 auto; }
+        .site-hero { position:relative; overflow:hidden; border-radius:34px; padding:28px; margin-bottom:24px; color:white; background:linear-gradient(135deg,#4f46e5,#06b6d4 65%,#22c55e); box-shadow:var(--shadow); }
+        .site-hero:after{content:""; position:absolute; right:-70px; top:-80px; width:260px; height:260px; border-radius:50%; background:rgba(255,255,255,.18);} 
+        .site-hero h1{font-size:clamp(28px,4vw,52px); letter-spacing:.5px; margin-bottom:8px;}
+        .site-hero p{font-size:16px; opacity:.95; max-width:760px; line-height:1.7;}
+        .hero-badges{display:flex; flex-wrap:wrap; gap:10px; margin-top:18px;}
+        .hero-badge{background:rgba(255,255,255,.18); border:1px solid rgba(255,255,255,.28); padding:8px 12px; border-radius:999px; font-weight:700; backdrop-filter:blur(6px);}
+        .card { background: var(--card); border:1px solid rgba(255,255,255,.65); border-radius: 28px; padding: 24px; box-shadow: var(--shadow); margin-bottom: 24px; backdrop-filter: blur(12px); }
+        .btn { background: linear-gradient(135deg,var(--brand),#7c3aed); color: white; border: none; padding: 10px 18px; border-radius: 999px; font-weight: 800; cursor: pointer; font-size: 14px; box-shadow:0 8px 18px rgba(99,102,241,.25); transition:.18s transform,.18s filter; }
+        .btn:hover{transform:translateY(-1px); filter:brightness(1.03);} .btn:active{transform:translateY(0);} 
+        .btn-outline { background: white; border: 1px solid var(--brand); color: var(--brand); box-shadow:none; }
+        .btn-sm { padding: 6px 12px; font-size: 12px; }
+        .btn-game{background:linear-gradient(135deg,#f97316,#ec4899);}
+        .btn-flash{background:linear-gradient(135deg,#06b6d4,#2563eb);}
+        .btn-match{background:linear-gradient(135deg,#10b981,#22c55e);}
+        .flex { display: flex; flex-wrap: wrap; gap: 16px; align-items: center; }
+        .split-pane { display: grid; grid-template-columns: minmax(280px,.9fr) minmax(320px,1.25fr); gap: 24px; }
+        .left-col, .right-col { min-width: 0; }
+        input, select, textarea { width: 100%; padding: 12px 14px; border: 1px solid #cbd5e1; border-radius: 16px; margin-top: 6px; margin-bottom: 12px; background:#fff; font-size:14px; }
+        input:focus,textarea:focus,select:focus{outline:3px solid rgba(99,102,241,.18); border-color:var(--brand)}
+        .subject-tag { background: white; border:1px solid #e2e8f0; padding: 9px 16px; border-radius: 999px; cursor: pointer; display: inline-block; font-weight:800; box-shadow:0 5px 14px rgba(15,23,42,.04); }
+        .subject-tag.active { background: linear-gradient(135deg,var(--brand),#06b6d4); color: white; border-color:transparent; }
+        .note-item, .exercise-item { background: white; border-radius: 22px; padding: 16px; margin-bottom: 14px; border: 1px solid #e2e8f0; border-left: 6px solid var(--brand); word-break: break-word; box-shadow:0 8px 18px rgba(15,23,42,.045); }
+        .exercise-item{position:relative; overflow:hidden;} .exercise-item:before{content:"";position:absolute;right:-28px;top:-28px;width:86px;height:86px;border-radius:50%;background:rgba(99,102,241,.10)}
+        .record-item { background: #f8fafc; margin: 10px 0; padding: 14px; border-radius: 18px; border:1px solid #e2e8f0; }
+        .q-card { background:#f8fafc; border:1px solid #e2e8f0; border-radius:18px; padding:14px; margin:12px 0; }
+        .danger-btn { background:linear-gradient(135deg,#ef4444,#f97316); }
+        .file-link { display: inline-block; margin-top: 8px; color: #4338ca; text-decoration: none; background: #eef2ff; padding: 7px 12px; border-radius: 999px; font-weight:700; }
+        .student-topbar{display:flex;justify-content:space-between;gap:16px;align-items:center;flex-wrap:wrap;margin-bottom:18px;}
+        .student-profile{display:flex;gap:14px;align-items:center;}
+        .avatar{width:54px;height:54px;border-radius:18px;background:linear-gradient(135deg,#6366f1,#06b6d4);color:white;display:grid;place-items:center;font-size:24px;font-weight:900;box-shadow:0 12px 24px rgba(99,102,241,.25)}
+        .stat-grid{display:grid;grid-template-columns:repeat(4,minmax(120px,1fr));gap:12px;margin:16px 0 22px;}
+        .stat-card{border-radius:22px;padding:16px;background:linear-gradient(180deg,#fff,#f8fafc);border:1px solid #e2e8f0;box-shadow:0 8px 18px rgba(15,23,42,.04)}
+        .stat-card b{display:block;font-size:26px}.stat-card span{color:var(--muted);font-weight:700;font-size:13px}
+        .learning-tabs{display:flex;gap:10px;flex-wrap:wrap;margin:12px 0 18px;}
+        .learning-tab{border:1px solid #e2e8f0;background:white;padding:9px 14px;border-radius:999px;font-weight:900;cursor:pointer;color:#334155;}
+        .learning-tab.active{background:#0f172a;color:white;border-color:#0f172a;}
+        .mode-grid{display:grid;grid-template-columns:repeat(3,minmax(180px,1fr));gap:14px;margin-bottom:20px;}
+        .mode-card{border:none;text-align:left;background:white;border-radius:24px;padding:18px;box-shadow:0 10px 22px rgba(15,23,42,.06);cursor:pointer;min-height:124px;position:relative;overflow:hidden;}
+        .mode-card:after{content:"";position:absolute;right:-20px;bottom:-20px;width:80px;height:80px;border-radius:50%;background:rgba(99,102,241,.1)}
+        .mode-card .emoji{font-size:30px}.mode-card b{display:block;margin:7px 0 4px;font-size:17px}.mode-card span{color:var(--muted);font-size:13px;line-height:1.5;}
+        .progress-bar{height:12px;border-radius:999px;background:#e2e8f0;overflow:hidden;margin-top:8px}.progress-fill{height:100%;background:linear-gradient(90deg,#22c55e,#06b6d4,#6366f1);border-radius:999px;}
+        .pill{display:inline-flex;align-items:center;gap:6px;border-radius:999px;background:#f1f5f9;padding:6px 10px;color:#334155;font-size:12px;font-weight:800;margin:4px 6px 4px 0;}
+        .answer-option{display:block;width:100%;text-align:left;background:#fff;border:2px solid #e2e8f0;border-radius:18px;padding:14px 16px;margin:10px 0;font-weight:800;cursor:pointer;transition:.15s;}
+        .answer-option:hover{border-color:#6366f1;background:#eef2ff;transform:translateY(-1px)}
+        .answer-option.correct{background:#ecfdf5;border-color:#10b981}.answer-option.wrong{background:#fef2f2;border-color:#ef4444}
+        .flashcard{min-height:260px;display:grid;place-items:center;text-align:center;border-radius:30px;background:linear-gradient(135deg,#ffffff,#eef2ff);border:1px solid #c7d2fe;padding:28px;font-size:24px;font-weight:900;cursor:pointer;box-shadow:inset 0 0 0 3px rgba(255,255,255,.6)}
+        .match-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.match-card{background:white;border:2px solid #e2e8f0;border-radius:18px;padding:14px;cursor:pointer;font-weight:800;min-height:62px}.match-card.selected{border-color:#f97316;background:#fff7ed}.match-card.done{opacity:.45;text-decoration:line-through;background:#ecfdf5;border-color:#10b981}
+
+
+        .note-preview-modal{width:94vw!important;max-width:1180px!important;height:88vh!important;max-height:88vh!important;overflow:hidden!important;padding:0!important;background:#f8fafc!important;}
+        .note-preview-head{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:14px 18px;background:white;border-bottom:1px solid #e2e8f0;}
+        .note-preview-body{height:calc(88vh - 68px);background:#111827;padding:12px;}
+        .note-preview-body iframe{width:100%;height:100%;border:0;border-radius:18px;background:white;}
+        .note-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;}
+        .workbench-modal{width:96vw!important;max-width:1280px!important;height:90vh!important;max-height:90vh!important;overflow:hidden!important;padding:0!important;background:#f8fafc!important;}
+        .workbench-head{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:16px 18px;background:white;border-bottom:1px solid #e2e8f0;}
+        .workbench-body{display:grid;grid-template-columns:minmax(360px,1.08fr) minmax(340px,.92fr);gap:0;height:calc(90vh - 72px);}
+        .pdf-pane{background:#111827;padding:12px;display:flex;flex-direction:column;gap:10px;min-height:0;}
+        .pdf-pane iframe{width:100%;height:100%;border:0;border-radius:18px;background:white;}
+        .answer-pane{background:#fff;padding:18px;overflow:auto;border-left:1px solid #e2e8f0;}
+        .answer-paper-title{position:sticky;top:-18px;background:#fff;padding:0 0 12px;z-index:3;border-bottom:1px solid #e2e8f0;margin-bottom:12px;}
+        .answer-sheet-q{background:#f8fafc;border:1px solid #e2e8f0;border-radius:18px;padding:14px;margin:12px 0;}
+        .answer-sheet-q .q-type{display:inline-block;background:#eef2ff;color:#4338ca;border-radius:999px;padding:4px 10px;font-size:12px;font-weight:900;margin-bottom:8px;}
+        @media (max-width: 900px){.workbench-modal{height:94vh!important;}.workbench-body{grid-template-columns:1fr;height:calc(94vh - 72px);}.pdf-pane{height:44vh}.answer-pane{border-left:0;border-top:1px solid #e2e8f0;}}
+
+        .drawing-board-wrap { background:#ffffff; border:1px dashed #cbd5e1; border-radius:16px; padding:10px; margin-top:10px; }
+        .drawing-board-head { display:flex; justify-content:space-between; align-items:center; gap:8px; margin-bottom:8px; color:#475569; font-size:13px; font-weight:800; }
+        .drawing-canvas-box { position:relative; border-radius:14px; overflow:hidden; background:#fff; }
+        .drawing-canvas-box.show-grid { background-image:linear-gradient(#e2e8f0 1px, transparent 1px),linear-gradient(90deg,#e2e8f0 1px, transparent 1px); background-size:24px 24px; }
+        .drawing-canvas { width:100%; height:240px; border:1px solid #cbd5e1; border-radius:14px; background:transparent; touch-action:none; display:block; }
+        .drawing-tools { display:flex; flex-wrap:wrap; gap:8px; align-items:center; margin-top:8px; }
+        .drawing-tools input[type="color"] { width:42px; height:34px; padding:2px; margin:0; border-radius:10px; }
+        .drawing-tools input[type="range"] { width:110px; margin:0; }
+        .draw-tool-btn { border:1px solid #cbd5e1; background:#f8fafc; color:#334155; border-radius:999px; padding:6px 10px; font-weight:900; cursor:pointer; font-size:12px; }
+        .draw-tool-btn.active { background:#4338ca; border-color:#4338ca; color:white; }
+        .draw-hint { font-size:12px; color:#64748b; line-height:1.6; width:100%; }
+        .submitted-drawing { max-width:100%; border:1px solid #cbd5e1; border-radius:12px; background:white; margin-top:8px; }
+        .vocab-set-card{background:linear-gradient(135deg,#fefce8,#ecfeff);border:1px solid #bae6fd;border-radius:22px;padding:14px;margin:12px 0;border-left:5px solid #06b6d4;}
+        .vocab-input-hint{background:#f8fafc;border:1px dashed #cbd5e1;border-radius:16px;padding:10px;margin:8px 0;color:#64748b;font-size:13px;line-height:1.6;}
+        .quiz-option{display:block;width:100%;text-align:left;margin:8px 0;padding:12px 14px;border-radius:16px;border:2px solid #e2e8f0;background:white;font-weight:800;cursor:pointer;}
+        .quiz-option.correct{background:#dcfce7;border-color:#22c55e;}
+        .quiz-option.wrong{background:#fee2e2;border-color:#ef4444;}
+
+        @media (max-width: 900px) { .split-pane{grid-template-columns:1fr}.stat-grid,.mode-grid{grid-template-columns:repeat(2,minmax(130px,1fr));} }
+        @media (max-width: 600px) { body{padding:12px}.card{padding:18px}.stat-grid,.mode-grid{grid-template-columns:1fr}.site-hero{padding:22px}.student-topbar{align-items:flex-start} }
+    </style>
+</head>
+<body>
+<div class="container" id="app">
+    <section class="site-hero">
+        <h1>Miss PAN Learning Hub</h1>
+        <p>像 Kahoot 一樣即時答題，像 Quizlet 一樣用閃卡與配對複習，並保留 Google Drive、朗讀錄音、教師批改和跨裝置同步。</p>
+        <div class="hero-badges"><span class="hero-badge">🎮 遊戲化測驗</span><span class="hero-badge">🃏 閃卡複習</span><span class="hero-badge">🧩 配對練習</span><span class="hero-badge">📊 學習進度</span><span class="hero-badge">☁️ 跨裝置同步</span></div>
+    </section>
+    <!-- 學生端 -->
+    <div id="studentView" class="card">
+        <h2>🎓 學生學習入口</h2>
+        <div class="flex">
+            <input type="text" id="studentIdInput" placeholder="請輸入學號 (例如 S001)" style="width:200px;">
+            <button class="btn" id="loginBtn">登入 / 進入學習</button>
+        </div>
+        <div id="studentDashboard" style="margin-top: 20px; display:none;">
+            <div class="student-topbar"><div class="student-profile"><div class="avatar" id="studentAvatar">P</div><div><h3>歡迎，<span id="studentNameSpan"></span> 同學</h3><p style="color:#64748b;font-weight:700;">今天想用哪種方式學習？</p></div></div><div class="pill">☁️ <span id="cloudStatusText">同步中</span></div></div>
+            <div class="flex" id="subjectListArea" style="margin: 20px 0;"></div>
+            <div id="subjectContentArea"></div>
+        </div>
+    </div>
+
+    <!-- 教師後台 -->
+    <div class="card">
+        <button id="toggleAdminBtn" class="btn btn-outline">🔐 教師後台管理 (點擊展開)</button>
+        <div id="adminPanel" style="display:none; margin-top:20px;">
+            <h3>👩‍🏫 教師後台</h3>
+            <div class="flex" style="justify-content:space-between; flex-wrap:wrap;">
+                <button class="btn admin-action" data-action="manageStudent">📋 管理學生學科＆姓名</button>
+                <button class="btn admin-action" data-action="uploadNote">📘 上傳筆記 (Google Drive 連結)</button>
+                <button class="btn admin-action" data-action="manageNotes">✏️ 修改筆記標題</button>
+                <button class="btn admin-action" data-action="manageAllDocuments">🗂️ 管理／刪除所有文檔</button>
+                <button class="btn admin-action" data-action="viewSubmissions">📊 查看所有提交記錄</button>
+                <button class="btn admin-action" data-action="learningAnalytics">🏆 學習數據／排行榜</button>
+                <button class="btn admin-action" data-action="vocabSets">🃏 建立單詞學習集</button>
+                <button class="btn admin-action" data-action="uploadChoice">📄 上傳選擇題文件(CSV)</button>
+                <button class="btn admin-action" data-action="uploadRich">🖼️ 上傳／轉換互動練習</button>
+                <button class="btn admin-action" data-action="managePublishedExercises">🗑️ 刪除／取消發布練習</button>
+                <button class="btn admin-action" data-action="deletePendingByStudent">✅ 刪除學生待完成練習</button>
+                <button class="btn admin-action" data-action="uploadListening">🎧 上傳聽力(中文/英文)</button>
+                <button class="btn admin-action" data-action="createReading">🗣️ 新增朗讀材料</button>
+                <button class="btn admin-action" data-action="driveSettings">⚙️ Google Drive 上傳設定</button>
+            </div>
+            <div id="adminDynamicArea" style="margin-top: 24px;"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // ---------- 學科全部繁體 ----------
+    const primarySubjects = ["中文","英文","數學","常識","人文","科學","音樂","體育","普通話"];
+    const secondarySubjects = ["中文","英文","數學","公民","科學","化學","物理","生物","經濟","企會管","地理","歷史","中史"];
+    const DEFAULT_GAS_UPLOAD_URL = "https://script.google.com/macros/s/AKfycbwnvaK5J0IzwJmIRcaVvbfEhPF-krZZWfkizRG74mG8vxP0Cd__L928Xu7W750Cgdhy/exec";
+    let cloudSyncReady = false;
+    let cloudSyncTimer = null;
+    let lastCloudStatus = "尚未同步";
+
+    // ---------- 學生清單 ----------
+    const DEFAULT_STUDENTS = [
+        { studentId: "S001", name: "Hannah", gradeType: "小學", subjects: [...primarySubjects] },
+        { studentId: "S002", name: "Elvis", gradeType: "小學", subjects: [...primarySubjects] },
+        { studentId: "S003", name: "Yannie", gradeType: "小學", subjects: [...primarySubjects] },
+        { studentId: "S004", name: "Kobe", gradeType: "中學", subjects: [...secondarySubjects] },
+        { studentId: "S005", name: "Katie", gradeType: "中學", subjects: [...secondarySubjects] },
+        { studentId: "S006", name: "Kylie", gradeType: "中學", subjects: [...secondarySubjects] },
+        { studentId: "S007", name: "Anna", gradeType: "中學", subjects: [...secondarySubjects] },
+        { studentId: "S008", name: "噠熹", gradeType: "中學", subjects: [...secondarySubjects] },
+        { studentId: "S009", name: "沁兒", gradeType: "中學", subjects: [...secondarySubjects] },
+        { studentId: "S010", name: "Yannis", gradeType: "中學", subjects: [...secondarySubjects] }
+    ];
+
+    let db = {
+        students: [],
+        notes: [],        // { id, subject, title, driveLink, description, uploadDate, gameQuizId, targetStudentIds }
+        exercises: [],    // { id, subject, type, title, config, createdAt, targetStudentIds }；interactive_mixed 支援選擇/是非/填充/問答/資料題
+        vocabSets: [],    // { id, subject, title, sourceNoteId, cards:[{term, definition}], targetStudentIds, createdAt }
+        submissions: [],  // { id, studentId, exerciseId, answers, score, feedback, correction, reviewed, submitDate }
+        settings: { gasUploadUrl: DEFAULT_GAS_UPLOAD_URL } // Google Apps Script Web App URL，用於把學生朗讀錄音上傳到老師 Google Drive
+    };
+
+    function loadDB() {
+        const saved = localStorage.getItem("teach_platform_db");
+        let oldStudents = null;
+        if(saved) {
+            try {
+                let parsed = JSON.parse(saved);
+                if(parsed.students) oldStudents = parsed.students;
+                if(parsed.notes) db.notes = parsed.notes;
+                if(parsed.exercises) db.exercises = parsed.exercises;
+                if(parsed.vocabSets) db.vocabSets = parsed.vocabSets;
+                if(parsed.submissions) db.submissions = parsed.submissions;
+                if(parsed.settings) db.settings = { ...db.settings, ...parsed.settings };
+                // 如果舊版 localStorage 曾保存空網址，這裡自動恢復老師已提供的 Apps Script URL
+                if(!db.settings.gasUploadUrl || !String(db.settings.gasUploadUrl).trim()) {
+                    db.settings.gasUploadUrl = DEFAULT_GAS_UPLOAD_URL;
+                }
+            } catch(e) {}
+        }
+        // 合併學生資料
+        const newStudents = [];
+        for (let defaultStu of DEFAULT_STUDENTS) {
+            let existing = oldStudents ? oldStudents.find(s => s.studentId === defaultStu.studentId) : null;
+            if (existing) {
+                newStudents.push({
+                    ...defaultStu,
+                    name: existing.name || defaultStu.name,
+                    subjects: (existing.subjects && existing.subjects.length) ? existing.subjects : defaultStu.subjects
+                });
+            } else {
+                newStudents.push({ ...defaultStu });
+            }
+        }
+        db.students = newStudents;
+        syncStorage();
+    }
+
+    function syncStorage() {
+        localStorage.setItem("teach_platform_db", JSON.stringify(db));
+        if(cloudSyncReady) scheduleCloudSave();
+    }
+
+    function normalizeDbShape(data) {
+        if(!data || typeof data !== 'object') return null;
+        data.students = Array.isArray(data.students) ? data.students : [];
+        data.notes = Array.isArray(data.notes) ? data.notes : [];
+        data.exercises = Array.isArray(data.exercises) ? data.exercises : [];
+        data.vocabSets = Array.isArray(data.vocabSets) ? data.vocabSets : [];
+        data.submissions = Array.isArray(data.submissions) ? data.submissions : [];
+        data.settings = { gasUploadUrl: DEFAULT_GAS_UPLOAD_URL, ...(data.settings || {}) };
+        if(!data.settings.gasUploadUrl || !String(data.settings.gasUploadUrl).trim()) data.settings.gasUploadUrl = DEFAULT_GAS_UPLOAD_URL;
+        return data;
+    }
+
+    function mergeDefaultStudents(studentsFromCloud) {
+        const result = [];
+        for (let defaultStu of DEFAULT_STUDENTS) {
+            let existing = Array.isArray(studentsFromCloud) ? studentsFromCloud.find(s => s.studentId === defaultStu.studentId) : null;
+            result.push(existing ? {
+                ...defaultStu,
+                ...existing,
+                subjects: (existing.subjects && existing.subjects.length) ? existing.subjects : defaultStu.subjects
+            } : { ...defaultStu });
+        }
+        if(Array.isArray(studentsFromCloud)) {
+            studentsFromCloud.forEach(s => { if(s && s.studentId && !result.find(x=>x.studentId===s.studentId)) result.push(s); });
+        }
+        return result;
+    }
+
+    async function cloudRequest(payload) {
+        const url = (db.settings && db.settings.gasUploadUrl) ? db.settings.gasUploadUrl : DEFAULT_GAS_UPLOAD_URL;
+        const res = await fetch(url, {
+            method: "POST",
+            mode: "cors",
+            headers: { "Content-Type": "text/plain;charset=utf-8" },
+            body: JSON.stringify(payload)
+        });
+        const json = await res.json();
+        if(!json.ok) throw new Error(json.error || "雲端同步失敗");
+        return json;
+    }
+
+    async function loadCloudDB() {
+        try {
+            const json = await cloudRequest({ action: "getDB" });
+            if(json.db) {
+                const cloudDb = normalizeDbShape(json.db);
+                if(cloudDb) {
+                    db.students = mergeDefaultStudents(cloudDb.students);
+                    db.notes = cloudDb.notes;
+                    db.exercises = cloudDb.exercises;
+                    db.vocabSets = cloudDb.vocabSets || [];
+                    db.submissions = cloudDb.submissions;
+                    db.settings = { ...db.settings, ...cloudDb.settings };
+                    localStorage.setItem("teach_platform_db", JSON.stringify(db));
+                    lastCloudStatus = "已從 Google 後台載入資料";
+                }
+            } else {
+                lastCloudStatus = "Google 後台暫無資料，已使用本機資料";
+            }
+            cloudSyncReady = true;
+            refreshCurrentViewsAfterSync();
+        } catch(err) {
+            console.warn(err);
+            cloudSyncReady = false;
+            lastCloudStatus = "雲端同步失敗：" + err.message;
+            showCloudWarning(err.message);
+        }
+    }
+
+    function scheduleCloudSave() {
+        clearTimeout(cloudSyncTimer);
+        cloudSyncTimer = setTimeout(saveCloudDB, 600);
+    }
+
+    async function saveCloudDB() {
+        if(!cloudSyncReady) return;
+        try {
+            const payloadDb = JSON.parse(JSON.stringify(db));
+            const json = await cloudRequest({ action: "saveDB", db: payloadDb, updatedAt: new Date().toISOString() });
+            lastCloudStatus = "已同步到 Google 後台：" + new Date().toLocaleString();
+        } catch(err) {
+            console.warn(err);
+            lastCloudStatus = "保存到 Google 後台失敗：" + err.message;
+            showCloudWarning(err.message);
+        }
+    }
+
+    function refreshCurrentViewsAfterSync() {
+        if(currentStudent) {
+            currentStudent = db.students.find(s => s.studentId === currentStudent.studentId) || currentStudent;
+            document.getElementById("studentNameSpan").innerText = currentStudent.name;
+            renderStudentSubjects();
+        }
+        const adminPanel = document.getElementById("adminPanel");
+        const area = document.getElementById("adminDynamicArea");
+        if(adminPanel && adminPanel.style.display !== "none" && area && !area.innerHTML.trim()) renderAdminStudents();
+    }
+
+    function showCloudWarning(message) {
+        let box = document.getElementById("cloudSyncWarning");
+        if(!box) {
+            box = document.createElement("div");
+            box.id = "cloudSyncWarning";
+            box.style.cssText = "position:fixed;right:16px;bottom:16px;z-index:2000;max-width:360px;background:#fff7ed;border:1px solid #fb923c;color:#9a3412;padding:12px 14px;border-radius:16px;box-shadow:0 8px 20px rgba(0,0,0,.08);font-size:13px;";
+            document.body.appendChild(box);
+        }
+        box.innerHTML = `⚠️ 雲端同步提示：${escapeHtml(message)}<br><span style="color:#64748b;">目前仍可用本機資料；要跨裝置請確認 Apps Script 已更新部署。</span>`;
+        setTimeout(()=>{ if(box) box.remove(); }, 8000);
+    }
+
+    // 新增筆記 (Google Drive 連結)
+    function addNote(subject, title, driveLink, description = "", autoGenGame = false, targetStudentIds = []) {
+        let noteId = Date.now();
+        let note = { id: noteId, subject, title, driveLink, description, uploadDate: new Date().toISOString(), gameQuizId: null, targetStudentIds };
+        db.notes.push(note);
+        if(autoGenGame) {
+            let gameTitle = `【趣味測驗】${title}`;
+            let questions = [];
+            if(description.trim()) {
+                // 根據描述產生簡單題目
+                let sentences = description.split(/[。！？]/).filter(s => s.trim().length > 5);
+                for(let i=0; i<Math.min(sentences.length,2); i++) {
+                    questions.push({ text: `根據筆記說明：「${sentences[i].substring(0,30)}...」，下列何者正確？`, options: ["正確", "錯誤"], answer: "正確" });
+                }
+            }
+            if(questions.length===0) questions.push({ text: "此筆記的重點為何？", options: ["學習內容", "測驗練習"], answer: "學習內容" });
+            let gameExercise = {
+                id: Date.now()+1,
+                subject: subject,
+                type: "game_quiz",
+                title: gameTitle,
+                config: { questions: questions, answers: questions.map(q=>q.answer), noteId: noteId },
+                createdAt: new Date().toISOString(),
+                targetStudentIds: [...targetStudentIds]
+            };
+            db.exercises.push(gameExercise);
+            note.gameQuizId = gameExercise.id;
+            let idx = db.notes.findIndex(n=>n.id===noteId);
+            if(idx!==-1) db.notes[idx].gameQuizId = gameExercise.id;
+        }
+        syncStorage();
+    }
+
+    // 新增練習 (Google Drive 連結)
+    function addExerciseFromDrive(subject, title, driveLink, description = "", targetStudentIds = []) {
+        let exercise = {
+            id: Date.now(),
+            subject: subject,
+            type: "drive_file",
+            title: title,
+            config: { driveLink: driveLink, description: description },
+            createdAt: new Date().toISOString(),
+            targetStudentIds
+        };
+        db.exercises.push(exercise);
+        syncStorage();
+    }
+
+    function addExercise(exerciseObj) { exerciseObj.id = Date.now(); if(!exerciseObj.targetStudentIds) exerciseObj.targetStudentIds = []; if(!exerciseObj.createdAt) exerciseObj.createdAt = new Date().toISOString(); db.exercises.push(exerciseObj); syncStorage(); }
+    function addSubmission(sub) { sub.id = Date.now(); if(typeof sub.reviewed === 'undefined') sub.reviewed = false; db.submissions.push(sub); syncStorage(); }
+    function updateSubmissionReview(submissionId, score, feedback, correction) {
+        let sub = db.submissions.find(r => r.id === submissionId);
+        if(!sub) return false;
+        sub.score = score === '' ? null : score;
+        sub.feedback = feedback || '';
+        sub.correction = correction || '';
+        sub.reviewed = true;
+        sub.reviewedAt = new Date().toISOString();
+        syncStorage();
+        return true;
+    }
+    function updateNoteTitle(noteId, newTitle) { let note = db.notes.find(n=>n.id === noteId); if(note) { note.title = newTitle; syncStorage(); return true; } return false; }
+    function updateStudentName(studentId, newName) { let student = db.students.find(s => s.studentId === studentId); if(student) { student.name = newName; syncStorage(); return true; } return false; }
+    function updateStudentSubjects(studentId, newSubjects) { let student = db.students.find(s => s.studentId === studentId); if(student) { student.subjects = newSubjects; syncStorage(); return true; } return false; }
+
+    let currentStudent = null;
+    let currentSubject = null;
+    function escapeHtml(str) { return String(str).replace(/[&<>]/g, function(m){ if(m==='&') return '&amp;'; if(m==='<') return '&lt;'; if(m==='>') return '&gt;'; return m;}); }
+    function formatSubmittedAnswers(sub) {
+        if(!sub) return '<span style="color:#64748b;">暫無提交答案</span>';
+        let raw = sub.answers;
+        if(raw === undefined || raw === null || raw === '') return '<span style="color:#64748b;">未填寫答案</span>';
+        function renderAnswerItem(a, i) {
+            if(a && typeof a === 'object') {
+                let q = a.question ? `<div style="font-weight:900;color:#334155;">${i+1}. ${escapeHtml(a.question)}</div>` : `<div style="font-weight:900;color:#334155;">第 ${i+1} 題</div>`;
+                let textAns = (a.answer !== undefined && a.answer !== null && String(a.answer).trim() !== '') ? escapeHtml(a.answer) : '<span style="color:#94a3b8;">未填寫文字答案</span>';
+                let html = `<li style="margin-bottom:12px;">${q}<div><b>文字答案：</b>${textAns}</div>`;
+                if(a.drawingData) html += `<div><b>繪圖答案：</b><br><img class="submitted-drawing" src="${a.drawingData}" alt="學生繪圖答案"></div>`;
+                if(a.correctAnswer !== undefined && String(a.correctAnswer).trim()) html += `<div style="color:#64748b;font-size:13px;"><b>參考答案：</b>${escapeHtml(a.correctAnswer)}</div>`;
+                html += `</li>`;
+                return html;
+            }
+            return `<li>${escapeHtml(a || '未作答')}</li>`;
+        }
+        try {
+            let parsed = typeof raw === 'string' ? JSON.parse(raw) : raw;
+            if(Array.isArray(parsed)) {
+                return '<ol style="padding-left:22px;margin-top:6px;">' + parsed.map((a,i)=>renderAnswerItem(a,i)).join('') + '</ol>';
+            }
+            if(typeof parsed === 'object') {
+                return '<div style="margin-top:6px;">' + Object.keys(parsed).map(k=>`<div><b>${escapeHtml(k)}：</b>${escapeHtml(parsed[k] || '未作答')}</div>`).join('') + '</div>';
+            }
+            return escapeHtml(parsed);
+        } catch(e) {
+            let text = String(raw);
+            if(text.startsWith('朗讀音頻:') || text.startsWith('錄音檔:')) return escapeHtml(text);
+            return escapeHtml(text);
+        }
+    }
+
+    function studentPickerHtml(prefix, subjectValue = "") {
+        let rows = db.students.map(stu => {
+            let subjectHint = subjectValue && !(stu.subjects || []).includes(subjectValue) ? ' style="opacity:.45" title="該學生目前沒有此學科"' : '';
+            return `<label${subjectHint} style="display:inline-flex;align-items:center;gap:4px;margin:4px 10px 4px 0;"><input type="checkbox" class="${prefix}TargetStudent" value="${stu.studentId}"> ${escapeHtml(stu.name)} (${stu.studentId})</label>`;
+        }).join('');
+        return `<div style="background:#f8fafc;border:1px dashed #cbd5e1;border-radius:16px;padding:12px;margin:8px 0 12px;">
+            <b>發布給哪些學生？</b>
+            <div style="font-size:13px;color:#64748b;margin:4px 0 8px;">不勾選任何學生 = 發布給所有擁有該學科的學生。</div>
+            <div><label><input type="checkbox" id="${prefix}SelectAllTargets"> 全選學生</label></div>
+            <div>${rows}</div>
+        </div>`;
+    }
+    function bindTargetSelectAll(prefix) {
+        let box = document.getElementById(`${prefix}SelectAllTargets`);
+        if(!box) return;
+        box.addEventListener('change', () => {
+            document.querySelectorAll(`.${prefix}TargetStudent`).forEach(cb => cb.checked = box.checked);
+        });
+    }
+    function getSelectedTargetStudentIds(prefix) {
+        return Array.from(document.querySelectorAll(`.${prefix}TargetStudent:checked`)).map(cb => cb.value);
+    }
+    function isPublishedToStudent(item, studentId) {
+        return !item.targetStudentIds || item.targetStudentIds.length === 0 || item.targetStudentIds.includes(studentId);
+    }
+    function latestSubmissionFor(studentId, exerciseId) {
+        return [...db.submissions].reverse().find(r => r.studentId === studentId && r.exerciseId === exerciseId);
+    }
+    function isExercisePendingForStudent(exercise, studentId) {
+        return isPublishedToStudent(exercise, studentId) && !latestSubmissionFor(studentId, exercise.id);
+    }
+    function getPendingExercisesForStudent(studentId) {
+        return db.exercises.filter(ex => isExercisePendingForStudent(ex, studentId));
+    }
+
+    function removeExerciseForStudents(exerciseId, studentIds) {
+        let ex = db.exercises.find(e => e.id === exerciseId);
+        if(!ex) return false;
+        if(!studentIds || studentIds.length === 0) return false;
+        if(!ex.targetStudentIds || ex.targetStudentIds.length === 0) {
+            // 原本是發布給全部學生，先展開成全部學生，再移除指定學生
+            ex.targetStudentIds = db.students.map(s => s.studentId).filter(id => !studentIds.includes(id));
+        } else {
+            ex.targetStudentIds = ex.targetStudentIds.filter(id => !studentIds.includes(id));
+        }
+        syncStorage();
+        return true;
+    }
+    function deleteExerciseCompletely(exerciseId) {
+        db.exercises = db.exercises.filter(e => e.id !== exerciseId);
+        db.submissions = db.submissions.filter(s => s.exerciseId !== exerciseId);
+        db.notes.forEach(n => { if(n.gameQuizId === exerciseId) n.gameQuizId = null; });
+        syncStorage();
+        return true;
+    }
+    function normalizeQuestionType(t) {
+        t = String(t || '').toLowerCase().trim();
+        if(['choice','mc','multiple','選擇','選擇題'].includes(t)) return 'choice';
+        if(['truefalse','tf','是非','是非題','判斷'].includes(t)) return 'truefalse';
+        if(['fill','blank','填充','填充題','填空'].includes(t)) return 'fill';
+        if(['short','long','qa','問答','問答題','短答'].includes(t)) return 'short';
+        if(['data','source','資料','資料題'].includes(t)) return 'data';
+        return t || 'short';
+    }
+    function buildInteractiveQuestionsFromJson(raw) {
+        let questions = JSON.parse(raw || '[]');
+        if(!Array.isArray(questions)) throw new Error('題目必須是 JSON 陣列');
+        return questions.map((q, idx) => ({
+            type: normalizeQuestionType(q.type),
+            text: q.text || q.question || `第 ${idx+1} 題`,
+            options: Array.isArray(q.options) ? q.options : [],
+            answer: q.answer ?? '',
+            passage: q.passage || q.source || q.data || '',
+            marks: q.marks || ''
+        }));
+    }
+    function sampleInteractiveQuestionsJson() {
+        return `[
+  {"type":"choice","text":"1. 下列哪一項正確？","options":["A. 答案一","B. 答案二","C. 答案三","D. 答案四"],"answer":"A. 答案一"},
+  {"type":"truefalse","text":"2. 這句說法是否正確？","answer":"是"},
+  {"type":"fill","text":"3. 請填上適當詞語：香港的官方語文包括中文和____。","answer":"英文"},
+  {"type":"short","text":"4. 請用一句完整句子回答問題。","marks":"3"},
+  {"type":"data","passage":"資料一：這裏貼資料、短文、表格描述或圖片連結。","text":"5. 根據資料一，回答問題。","marks":"4"}
+]`;
+    }
+    function typeLabel(type) {
+        if(type==='choice') return '選擇題';
+        if(type==='fill') return '填充題';
+        if(type==='long') return '長問答';
+        if(type==='reading') return '閱讀理解';
+        if(type==='data') return '資料題';
+        if(type==='listening_cn') return '中文聆聽';
+        if(type==='listening_en') return '英文聆聽';
+        if(type==='reading_aloud') return '朗讀練習';
+        if(type==='game_quiz') return '趣味小遊戲';
+        if(type==='drive_file') return '雲端練習檔案';
+        if(type==='interactive_mixed') return '網頁互動練習';
+        return '練習';
+    }
+
+    // 將 Google Drive 分享連結轉成較適合 <audio> 播放/下載的直連格式
+    function normalizeDriveAudioUrl(url) {
+        if(!url) return "";
+        let id = "";
+        let match1 = url.match(/\/file\/d\/([^/]+)/);
+        let match2 = url.match(/[?&]id=([^&]+)/);
+        if(match1) id = match1[1];
+        else if(match2) id = match2[1];
+        return id ? `https://drive.google.com/uc?export=download&id=${id}` : url;
+    }
+
+    function normalizeDrivePreviewUrl(url) {
+        if(!url) return "";
+        let id = "";
+        let m1 = String(url).match(/\/file\/d\/([^/]+)/);
+        let m2 = String(url).match(/[?&]id=([^&]+)/);
+        if(m1) id = m1[1]; else if(m2) id = m2[1];
+        return id ? `https://drive.google.com/file/d/${id}/preview` : url;
+    }
+
+
+
+    function extractDriveFileId(url) {
+        if(!url) return '';
+        let m1 = String(url).match(/\/file\/d\/([^/]+)/);
+        let m2 = String(url).match(/[?&]id=([^&]+)/);
+        return m1 ? m1[1] : (m2 ? m2[1] : '');
+    }
+
+    function normalizeDriveDownloadUrl(url) {
+        const id = extractDriveFileId(url);
+        return id ? `https://drive.google.com/uc?export=download&id=${id}` : url;
+    }
+
+    function openNotePreview(note) {
+        const modalDiv = document.createElement('div');
+        modalDiv.style.position='fixed'; modalDiv.style.inset='0'; modalDiv.style.backgroundColor='rgba(15,23,42,.55)';
+        modalDiv.style.display='flex'; modalDiv.style.alignItems='center'; modalDiv.style.justifyContent='center'; modalDiv.style.zIndex='1200';
+        const modalContent = document.createElement('div');
+        modalContent.className = 'note-preview-modal';
+        const previewUrl = normalizeDrivePreviewUrl(note.driveLink || '');
+        const downloadUrl = normalizeDriveDownloadUrl(note.driveLink || '');
+        modalContent.innerHTML = `<div class="note-preview-head"><div><h3>📘 ${escapeHtml(note.title || '筆記')}</h3><p style="color:#64748b;font-size:13px;margin-top:3px;">在網頁內預覽筆記；如預覽空白，請確認 Google Drive 權限為「知道連結的人可檢視」。</p></div><div class="flex" style="gap:8px;"><a class="btn btn-outline btn-sm" href="${escapeHtml(downloadUrl)}" target="_blank" download>⬇️ 下載到本地</a><a class="btn btn-outline btn-sm" href="${escapeHtml(note.driveLink || '#')}" target="_blank">新分頁</a><button class="btn btn-sm" id="closeNotePreviewBtn">關閉</button></div></div><div class="note-preview-body"><iframe src="${escapeHtml(previewUrl)}" allow="autoplay"></iframe></div>`;
+        modalDiv.appendChild(modalContent);
+        document.body.appendChild(modalDiv);
+        modalContent.querySelector('#closeNotePreviewBtn').addEventListener('click',()=>modalDiv.remove());
+        modalDiv.addEventListener('click',(e)=>{ if(e.target===modalDiv) modalDiv.remove(); });
+    }
+
+    function buildAnswerSheetQuestions(exercise) {
+        if(exercise.type === 'interactive_mixed') return exercise.config.questions || [];
+        if(exercise.type === 'choice') return (exercise.config.questions || []).map((q,i)=>({type:'choice', text:q.text || `第 ${i+1} 題`, options:q.options || [], answer:(exercise.config.answers||[])[i] || ''}));
+        const count = parseInt((exercise.config && exercise.config.answerQuestionCount) || 5);
+        return Array.from({length: Math.max(1, count)}, (_,i)=>({type:'short', text:`第 ${i+1} 題`, marks:''}));
+    }
+
+    function renderDrawingBoardHtml(idx) {
+        return `<div class="drawing-board-wrap" data-drawing-wrap="${idx}">
+            <div class="drawing-board-head">
+                <span>🎨 繪圖板（可畫圖、畫線、畫圖形）</span>
+                <div class="flex" style="gap:6px;">
+                    <button type="button" class="btn btn-outline btn-sm undoDrawingBtn" data-canvas="draw${idx}">撤銷</button>
+                    <button type="button" class="btn btn-outline btn-sm clearDrawingBtn" data-canvas="draw${idx}">清空</button>
+                </div>
+            </div>
+            <div class="drawing-canvas-box show-grid" data-canvas-box="draw${idx}">
+                <canvas id="draw${idx}" class="drawing-canvas" width="900" height="400"></canvas>
+            </div>
+            <div class="drawing-tools" data-toolbar="draw${idx}">
+                <button type="button" class="draw-tool-btn active" data-tool="pen" data-canvas="draw${idx}">✏️ 鉛筆</button>
+                <button type="button" class="draw-tool-btn" data-tool="line" data-canvas="draw${idx}">📏 直尺/直線</button>
+                <button type="button" class="draw-tool-btn" data-tool="arrow" data-canvas="draw${idx}">➡️ 箭咀</button>
+                <button type="button" class="draw-tool-btn" data-tool="rect" data-canvas="draw${idx}">▭ 矩形</button>
+                <button type="button" class="draw-tool-btn" data-tool="circle" data-canvas="draw${idx}">◯ 圓形</button>
+                <button type="button" class="draw-tool-btn" data-tool="eraser" data-canvas="draw${idx}">🧽 橡皮擦</button>
+                <label style="font-size:13px;color:#64748b;display:inline-flex;align-items:center;gap:4px;"><input type="checkbox" class="smartShapeToggle" data-canvas="draw${idx}" checked> 智能修正</label>
+                <label style="font-size:13px;color:#64748b;display:inline-flex;align-items:center;gap:4px;"><input type="checkbox" class="gridToggle" data-canvas="draw${idx}" checked> 格線尺</label>
+                <label style="font-size:13px;color:#64748b;">顏色 <input type="color" class="drawColor" data-canvas="draw${idx}" value="#111827"></label>
+                <label style="font-size:13px;color:#64748b;">粗幼 <input type="range" class="drawSize" data-canvas="draw${idx}" min="1" max="18" value="4"></label>
+                <div class="draw-hint">提示：用「直尺/直線」可畫筆直線段；開啟「智能修正」後，手畫接近直線、矩形或圓形的筆畫會自動變成規整圖形。支援 iPad 觸控筆、手指和滑鼠。</div>
+            </div>
+        </div>`;
+    }
+
+    function renderAnswerSheetHtml(qs) {
+        if(!Array.isArray(qs) || qs.length === 0) {
+            qs = [{ type:'short', text:'第 1 題', marks:'' }];
+        }
+        return qs.map((q, idx) => {
+            const qt = normalizeQuestionType(q.type);
+            const qText = escapeHtml(q.text || `第 ${idx+1} 題`);
+            const marks = q.marks ? `<span style="color:#64748b;font-size:13px;">（${escapeHtml(q.marks)}分）</span>` : '';
+            const passage = q.passage ? `<div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:14px;padding:12px;margin:10px 0;white-space:pre-wrap;line-height:1.7;">${escapeHtml(q.passage)}</div>` : '';
+            let answerHtml = '';
+            if(qt === 'choice') {
+                const opts = Array.isArray(q.options) ? q.options : [];
+                answerHtml = opts.length ? opts.map(opt => `<label class="answer-option"><input type="radio" name="q${idx}" value="${escapeHtml(opt)}"> <span>${escapeHtml(opt)}</span></label>`).join('') : `<textarea id="q${idx}" rows="3" placeholder="這題沒有選項，請直接輸入答案"></textarea>`;
+            } else if(qt === 'truefalse') {
+                answerHtml = `<div class="tf-options"><label class="answer-option"><input type="radio" name="q${idx}" value="是"> <span>是</span></label><label class="answer-option"><input type="radio" name="q${idx}" value="非"> <span>非</span></label></div>`;
+            } else if(qt === 'fill') {
+                answerHtml = `<input type="text" id="q${idx}" placeholder="請輸入填充答案">`;
+            } else if(qt === 'short' || qt === 'data') {
+                answerHtml = `<textarea id="q${idx}" rows="5" placeholder="請在這裏作答；如需要畫圖，可使用下方繪圖板。"></textarea>${renderDrawingBoardHtml(idx)}`;
+            } else {
+                answerHtml = `<textarea id="q${idx}" rows="4" placeholder="請在這裏作答"></textarea>`;
+            }
+            return `<div class="q-card answer-sheet-q" data-question-index="${idx}"><p><strong>${idx+1}. ${qText}</strong> ${marks}</p>${passage}${answerHtml}</div>`;
+        }).join('');
+    }
+
+
+    function initDrawingBoards(root) {
+        function setupCanvas(canvas) {
+            if(canvas.dataset.enhancedDrawingReady === '1') return;
+            canvas.dataset.enhancedDrawingReady = '1';
+            const ctx = canvas.getContext('2d');
+            const state = { tool:'pen', color:'#111827', size:4, drawing:false, start:null, points:[], snapshot:null, history:[] };
+            canvas._drawState = state;
+            ctx.lineCap = 'round'; ctx.lineJoin = 'round'; ctx.strokeStyle = state.color; ctx.lineWidth = state.size;
+            function saveHistory() {
+                try { state.history.push(ctx.getImageData(0,0,canvas.width,canvas.height)); if(state.history.length > 20) state.history.shift(); } catch(e) {}
+            }
+            function restore(img) { if(img) ctx.putImageData(img,0,0); }
+            function getPos(e) {
+                const rect = canvas.getBoundingClientRect();
+                const point = e.touches ? e.touches[0] : e;
+                return { x: (point.clientX - rect.left) * (canvas.width / rect.width), y: (point.clientY - rect.top) * (canvas.height / rect.height) };
+            }
+            function applyStyle() {
+                ctx.lineCap = 'round'; ctx.lineJoin = 'round'; ctx.strokeStyle = state.color; ctx.lineWidth = state.tool === 'eraser' ? Math.max(12, state.size * 2) : state.size;
+                ctx.globalCompositeOperation = state.tool === 'eraser' ? 'destination-out' : 'source-over';
+            }
+            function drawArrowHead(from, to) {
+                const angle = Math.atan2(to.y - from.y, to.x - from.x);
+                const len = Math.max(12, state.size * 4);
+                ctx.beginPath();
+                ctx.moveTo(to.x, to.y);
+                ctx.lineTo(to.x - len * Math.cos(angle - Math.PI/6), to.y - len * Math.sin(angle - Math.PI/6));
+                ctx.moveTo(to.x, to.y);
+                ctx.lineTo(to.x - len * Math.cos(angle + Math.PI/6), to.y - len * Math.sin(angle + Math.PI/6));
+                ctx.stroke();
+            }
+            function drawShape(from, to, tool) {
+                applyStyle();
+                ctx.beginPath();
+                if(tool === 'line' || tool === 'arrow') {
+                    ctx.moveTo(from.x, from.y); ctx.lineTo(to.x, to.y); ctx.stroke();
+                    if(tool === 'arrow') drawArrowHead(from, to);
+                } else if(tool === 'rect') {
+                    ctx.strokeRect(from.x, from.y, to.x - from.x, to.y - from.y);
+                } else if(tool === 'circle') {
+                    const cx = (from.x + to.x)/2, cy = (from.y + to.y)/2;
+                    const rx = Math.abs(to.x - from.x)/2, ry = Math.abs(to.y - from.y)/2;
+                    ctx.ellipse(cx, cy, rx, ry, 0, 0, Math.PI*2); ctx.stroke();
+                }
+            }
+            function distanceToLine(p, a, b) {
+                const A = p.x-a.x, B = p.y-a.y, C = b.x-a.x, D = b.y-a.y;
+                const dot = A*C + B*D, lenSq = C*C + D*D || 1;
+                let param = Math.max(0, Math.min(1, dot/lenSq));
+                const xx = a.x + param*C, yy = a.y + param*D;
+                return Math.hypot(p.x-xx, p.y-yy);
+            }
+            function smartCleanStroke() {
+                if(!state.points || state.points.length < 5) return false;
+                const pts = state.points, first = pts[0], last = pts[pts.length-1];
+                const xs = pts.map(p=>p.x), ys = pts.map(p=>p.y);
+                const minX = Math.min(...xs), maxX = Math.max(...xs), minY = Math.min(...ys), maxY = Math.max(...ys);
+                const w = maxX-minX, h = maxY-minY, diag = Math.hypot(w,h);
+                if(diag < 25) return false;
+                const avgLineDist = pts.reduce((sum,p)=>sum+distanceToLine(p, first, last),0) / pts.length;
+                const closed = Math.hypot(first.x-last.x, first.y-last.y) < Math.max(34, diag*0.18);
+                restore(state.snapshot);
+                applyStyle();
+                ctx.globalCompositeOperation = 'source-over';
+                if(avgLineDist < Math.max(8, diag*0.055) && Math.hypot(first.x-last.x, first.y-last.y) > 45) {
+                    drawShape(first, last, 'line'); return true;
+                }
+                if(closed && w > 28 && h > 28) {
+                    const cx = (minX+maxX)/2, cy = (minY+maxY)/2;
+                    const rx = w/2, ry = h/2;
+                    const ellipseError = pts.reduce((sum,p)=>{
+                        const v = Math.sqrt(((p.x-cx)/rx)**2 + ((p.y-cy)/ry)**2);
+                        return sum + Math.abs(v-1);
+                    },0) / pts.length;
+                    const nearEdges = pts.filter(p => Math.min(Math.abs(p.x-minX), Math.abs(p.x-maxX), Math.abs(p.y-minY), Math.abs(p.y-maxY)) < Math.max(10, diag*0.06)).length / pts.length;
+                    if(nearEdges > 0.56) { ctx.strokeRect(minX, minY, w, h); return true; }
+                    if(ellipseError < 0.26) { ctx.beginPath(); ctx.ellipse(cx, cy, rx, ry, 0, 0, Math.PI*2); ctx.stroke(); return true; }
+                }
+                restore(state.snapshot);
+                return false;
+            }
+            function start(e){ e.preventDefault(); saveHistory(); state.drawing = true; state.start = getPos(e); state.points = [state.start]; state.snapshot = ctx.getImageData(0,0,canvas.width,canvas.height); applyStyle(); ctx.beginPath(); ctx.moveTo(state.start.x, state.start.y); }
+            function move(e){
+                if(!state.drawing) return; e.preventDefault(); const p = getPos(e); state.points.push(p); applyStyle();
+                if(['line','arrow','rect','circle'].includes(state.tool)) { restore(state.snapshot); drawShape(state.start, p, state.tool); return; }
+                ctx.lineTo(p.x, p.y); ctx.stroke();
+            }
+            function end(e){
+                if(!state.drawing) return; e.preventDefault(); state.drawing = false;
+                if(state.tool === 'pen') {
+                    const smart = root.querySelector(`.smartShapeToggle[data-canvas="${canvas.id}"]`);
+                    if(smart && smart.checked) smartCleanStroke();
+                }
+                ctx.globalCompositeOperation = 'source-over';
+            }
+            canvas.addEventListener('mousedown', start); canvas.addEventListener('mousemove', move); window.addEventListener('mouseup', end);
+            canvas.addEventListener('touchstart', start, {passive:false}); canvas.addEventListener('touchmove', move, {passive:false}); canvas.addEventListener('touchend', end, {passive:false});
+        }
+        root.querySelectorAll('.drawing-canvas').forEach(setupCanvas);
+        root.querySelectorAll('.draw-tool-btn').forEach(btn => btn.addEventListener('click', () => {
+            const canvas = root.querySelector(`#${btn.dataset.canvas}`); if(!canvas || !canvas._drawState) return;
+            canvas._drawState.tool = btn.dataset.tool || 'pen';
+            root.querySelectorAll(`.draw-tool-btn[data-canvas="${btn.dataset.canvas}"]`).forEach(b=>b.classList.remove('active'));
+            btn.classList.add('active');
+        }));
+        root.querySelectorAll('.drawColor').forEach(input => input.addEventListener('input', () => {
+            const canvas = root.querySelector(`#${input.dataset.canvas}`); if(canvas && canvas._drawState) { canvas._drawState.color = input.value; canvas.getContext('2d').strokeStyle = input.value; }
+        }));
+        root.querySelectorAll('.drawSize').forEach(input => input.addEventListener('input', () => {
+            const canvas = root.querySelector(`#${input.dataset.canvas}`); if(canvas && canvas._drawState) { canvas._drawState.size = Number(input.value || 4); canvas.getContext('2d').lineWidth = Number(input.value || 4); }
+        }));
+        root.querySelectorAll('.gridToggle').forEach(input => input.addEventListener('change', () => {
+            const box = root.querySelector(`[data-canvas-box="${input.dataset.canvas}"]`); if(box) box.classList.toggle('show-grid', input.checked);
+        }));
+        root.querySelectorAll('.undoDrawingBtn').forEach(btn => btn.addEventListener('click', () => {
+            const canvas = root.querySelector(`#${btn.dataset.canvas}`); if(canvas && canvas._drawState && canvas._drawState.history.length) canvas.getContext('2d').putImageData(canvas._drawState.history.pop(),0,0);
+        }));
+        root.querySelectorAll('.clearDrawingBtn').forEach(btn => btn.addEventListener('click', () => {
+            const canvas = root.querySelector(`#${btn.dataset.canvas}`); if(canvas) { const ctx = canvas.getContext('2d'); if(canvas._drawState) canvas._drawState.history.push(ctx.getImageData(0,0,canvas.width,canvas.height)); ctx.clearRect(0,0,canvas.width,canvas.height); }
+        }));
+    }
+
+    function isCanvasBlank(canvas) {
+        const ctx = canvas.getContext('2d');
+        const pixels = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
+        for(let i=3; i<pixels.length; i+=4) if(pixels[i] !== 0) return false;
+        return true;
+    }
+
+    function collectAnswerSheetResponses(modalContent, qs) {
+        let responses = [], autoTotal = 0, autoCorrect = 0;
+        qs.forEach((q, idx) => {
+            let qt = normalizeQuestionType(q.type), val = '';
+            if(qt === 'choice' || qt === 'truefalse') {
+                let selected = modalContent.querySelector(`input[name="q${idx}"]:checked`);
+                val = selected ? selected.value : '';
+            } else {
+                let input = modalContent.querySelector(`#q${idx}`);
+                val = input ? input.value.trim() : '';
+            }
+            let ans = q.answer ?? '';
+            let objective = ['choice','truefalse','fill'].includes(qt) && String(ans).trim() !== '';
+            let correct = null;
+            if(objective) { autoTotal++; correct = String(val).trim().toLowerCase() === String(ans).trim().toLowerCase(); if(correct) autoCorrect++; }
+            let item = { question:q.text, type:qt, answer:val, correctAnswer:ans, autoCorrect:correct };
+            let canvas = modalContent.querySelector(`#draw${idx}`);
+            if(canvas && !isCanvasBlank(canvas)) item.drawingData = canvas.toDataURL('image/png');
+            responses.push(item);
+        });
+        return { responses, autoScore: autoTotal ? `客觀題自動對：${autoCorrect}/${autoTotal}；待老師確認` : null };
+    }
+
+    function blobToBase64(blob) {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onloadend = () => resolve(String(reader.result).split(',')[1]);
+            reader.onerror = reject;
+            reader.readAsDataURL(blob);
+        });
+    }
+
+    async function uploadRecordingToDrive(audioBlob, exercise, transcript, scoreVal) {
+        if(!db.settings.gasUploadUrl) {
+            throw new Error("尚未在教師後台設定 Apps Script 上傳網址，錄音只能暫存在本機瀏覽器，不能跨裝置調取。");
+        }
+        const base64 = await blobToBase64(audioBlob);
+        const payload = {
+            action: "uploadRecording",
+            studentId: currentStudent.studentId,
+            studentName: currentStudent.name,
+            subject: exercise.subject,
+            exerciseTitle: exercise.title,
+            exerciseId: exercise.id,
+            transcript: transcript || "",
+            score: scoreVal ?? "",
+            mimeType: audioBlob.type || "audio/webm",
+            fileName: `${currentStudent.studentId}_${currentStudent.name}_${exercise.title}_${Date.now()}.webm`,
+            data: base64
+        };
+        const res = await fetch(db.settings.gasUploadUrl, {
+            method: "POST",
+            mode: "cors",
+            headers: { "Content-Type": "text/plain;charset=utf-8" },
+            body: JSON.stringify(payload)
+        });
+        const json = await res.json();
+        if(!json.ok) throw new Error(json.error || "上傳失敗");
+        return json;
+    }
+
+    function renderStudentSubjects() {
+        if(!currentStudent) return;
+        let subjectsList = currentStudent.subjects || [];
+        const container = document.getElementById("subjectListArea");
+        if(!container) return;
+        container.innerHTML = subjectsList.map(sub => `<span class="subject-tag" data-sub="${sub}">${sub}</span>`).join(' ');
+        document.querySelectorAll('.subject-tag').forEach(el => {
+            el.addEventListener('click', (e) => {
+                document.querySelectorAll('.subject-tag').forEach(c=>c.classList.remove('active'));
+                el.classList.add('active');
+                currentSubject = el.getAttribute('data-sub');
+                renderSubjectDetails(currentSubject);
+            });
+        });
+        if(subjectsList.length) {
+            currentSubject = subjectsList[0];
+            renderSubjectDetails(currentSubject);
+            let firstTag = document.querySelector('.subject-tag');
+            if(firstTag) firstTag.classList.add('active');
+        } else {
+            document.getElementById("subjectContentArea").innerHTML = "<p>暫無學科，請聯繫老師添加。</p>";
+        }
+    }
+
+
+    function extractQuestionsForStudy(exercise) {
+        if(!exercise) return [];
+        if(exercise.type === 'choice') {
+            return (exercise.config.questions || []).map((q, i) => ({
+                type:'choice', text:q.text || `第${i+1}題`, options:q.options || [], answer:(exercise.config.answers||[])[i] || ''
+            })).filter(q => q.text);
+        }
+        if(exercise.type === 'game_quiz') return (exercise.config.questions || []).map(q => ({...q, type:'choice'}));
+        if(exercise.type === 'interactive_mixed') return (exercise.config.questions || []).filter(q => ['choice','truefalse','fill'].includes(normalizeQuestionType(q.type)) && String(q.answer || '').trim());
+        if(exercise.type === 'listening_cn' || exercise.type === 'listening_en') return (exercise.config.questionsList || []).map(q=>({type:'short', text:q.text, answer:''}));
+        return [];
+    }
+    function getStudyExercisesForSubject(subject) {
+        if(!currentStudent) return [];
+        return db.exercises.filter(e => e.subject === subject && isPublishedToStudent(e, currentStudent.studentId) && extractQuestionsForStudy(e).length);
+    }
+    function getStudentStats(subject) {
+        let notes = db.notes.filter(n => n.subject === subject && isPublishedToStudent(n, currentStudent.studentId));
+        let allExercises = db.exercises.filter(e => e.subject === subject && isPublishedToStudent(e, currentStudent.studentId));
+        let pending = allExercises.filter(ex => !latestSubmissionFor(currentStudent.studentId, ex.id));
+        let completed = allExercises.filter(ex => latestSubmissionFor(currentStudent.studentId, ex.id));
+        let reviewed = completed.filter(ex => (latestSubmissionFor(currentStudent.studentId, ex.id)||{}).reviewed);
+        let percent = allExercises.length ? Math.round(completed.length / allExercises.length * 100) : 0;
+        return {notes, allExercises, pending, completed, reviewed, percent};
+    }
+    function renderLearningDashboard(subject) {
+        const st = getStudentStats(subject);
+        return `<div class="stat-grid">
+            <div class="stat-card"><b>${st.notes.length}</b><span>筆記 Notes</span></div>
+            <div class="stat-card"><b>${st.pending.length}</b><span>待完成 To-do</span></div>
+            <div class="stat-card"><b>${st.completed.length}</b><span>已完成 Done</span></div>
+            <div class="stat-card"><b>${st.percent}%</b><span>完成進度 Progress</span><div class="progress-bar"><div class="progress-fill" style="width:${st.percent}%"></div></div></div>
+        </div>
+        <div class="mode-grid">
+            <button class="mode-card" data-study-mode="kahoot"><div class="emoji">🎮</div><b>Kahoot 式挑戰</b><span>根據互動練習題限時答題，適合課前熱身。</span></button>
+            <button class="mode-card" data-study-mode="vocabFlash"><div class="emoji">🃏</div><b>單詞閃卡</b><span>根據筆記單詞集或老師輸入的詞表生成。</span></button>
+            <button class="mode-card" data-study-mode="vocabMatch"><div class="emoji">🧩</div><b>單詞配對</b><span>把單詞和定義配對，適合默書和概念複習。</span></button>
+            <button class="mode-card" data-study-mode="vocabQuiz"><div class="emoji">📝</div><b>單詞測驗</b><span>選擇題＋填空題，自動記錄複習分數。</span></button>
+        </div>`;
+    }
+    function bindLearningModeButtons(subject) {
+        document.querySelectorAll('[data-study-mode]').forEach(btn=>{
+            btn.addEventListener('click',()=>{
+                const mode = btn.getAttribute('data-study-mode');
+                if(mode === 'kahoot') {
+                    const exercises = getStudyExercisesForSubject(subject);
+                    if(!exercises.length) { alert('這個學科暫時沒有可轉成挑戰的客觀練習題。'); return; }
+                    openKahootMode(exercises);
+                    return;
+                }
+                const vocabSets = getVocabSetsForSubject(subject);
+                if(!vocabSets.length) { alert('這個學科暫時沒有單詞學習集。請老師先在後台「建立單詞學習集」。'); return; }
+                if(mode === 'vocabFlash') openVocabFlashcardMode(vocabSets);
+                if(mode === 'vocabMatch') openVocabMatchMode(vocabSets);
+                if(mode === 'vocabQuiz') openVocabQuizMode(vocabSets);
+            });
+        });
+    }
+    function makeStudyModal(title) {
+        const modalDiv = document.createElement('div');
+        modalDiv.style.cssText='position:fixed;inset:0;background:rgba(15,23,42,.72);display:flex;align-items:center;justify-content:center;z-index:3000;padding:14px;';
+        const box=document.createElement('div');
+        box.style.cssText='background:white;width:min(960px,96vw);max-height:90vh;overflow:auto;border-radius:32px;padding:26px;box-shadow:0 24px 80px rgba(0,0,0,.25);';
+        box.innerHTML=`<div style="display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:16px;"><h2>${escapeHtml(title)}</h2><button class="btn btn-outline" id="studyCloseBtn">關閉</button></div><div id="studyModalBody"></div>`;
+        modalDiv.appendChild(box); document.body.appendChild(modalDiv);
+        box.querySelector('#studyCloseBtn').onclick=()=>modalDiv.remove();
+        return {modalDiv, body:box.querySelector('#studyModalBody')};
+    }
+    function flattenStudyQuestions(exercises) {
+        let arr=[];
+        exercises.forEach(ex=>extractQuestionsForStudy(ex).forEach(q=>arr.push({...q, exerciseId:ex.id, exerciseTitle:ex.title})));
+        return arr.sort(()=>Math.random()-.5);
+    }
+    function openKahootMode(exercises) {
+        const qs = flattenStudyQuestions(exercises).filter(q=>['choice','truefalse','fill'].includes(normalizeQuestionType(q.type))).slice(0,20);
+        if(!qs.length){ alert('暫時沒有客觀題可挑戰。'); return; }
+        const {body}=makeStudyModal('🎮 Kahoot 式限時挑戰');
+        let i=0, score=0, streak=0, seconds=20, timer=null;
+        function render(){
+            clearInterval(timer); seconds=20;
+            const q=qs[i], type=normalizeQuestionType(q.type);
+            let options=[];
+            if(type==='choice') options=q.options||[];
+            else if(type==='truefalse') options=['是','非'];
+            body.innerHTML=`<div class="pill">第 ${i+1}/${qs.length} 題</div><div class="pill">分數 ${score}</div><div class="pill">連對 ${streak}</div>
+            <div class="progress-bar"><div id="timeFill" class="progress-fill" style="width:100%"></div></div>
+            <h2 style="margin:22px 0;line-height:1.5;">${escapeHtml(q.text||'')}</h2>
+            <div id="challengeOptions"></div><div id="challengeFeedback" style="margin-top:14px;font-weight:900;"></div>`;
+            const wrap=body.querySelector('#challengeOptions');
+            if(type==='fill'){
+                wrap.innerHTML=`<input id="fillChallengeAnswer" placeholder="輸入答案"><button class="btn btn-game" id="submitFillChallenge">提交</button>`;
+                body.querySelector('#submitFillChallenge').onclick=()=>check(body.querySelector('#fillChallengeAnswer').value);
+            } else {
+                options.forEach(opt=>{ const b=document.createElement('button'); b.className='answer-option'; b.textContent=opt; b.onclick=()=>check(opt,b); wrap.appendChild(b); });
+            }
+            timer=setInterval(()=>{ seconds--; const f=body.querySelector('#timeFill'); if(f) f.style.width=Math.max(0,seconds/20*100)+'%'; if(seconds<=0){ clearInterval(timer); check(''); } },1000);
+        }
+        function check(val, btn){
+            clearInterval(timer);
+            const q=qs[i]; const ok=String(val).trim().toLowerCase()===String(q.answer||'').trim().toLowerCase();
+            if(ok){ streak++; score += 100 + Math.min(50, seconds*2) + streak*10; if(btn) btn.classList.add('correct'); }
+            else { streak=0; if(btn) btn.classList.add('wrong'); }
+            body.querySelector('#challengeFeedback').innerHTML = ok ? '✅ 正確！' : `❌ 正確答案：${escapeHtml(q.answer||'')}`;
+            setTimeout(()=>{ i++; if(i<qs.length) render(); else finish(); },900);
+        }
+        function finish(){
+            addSubmission({ studentId:currentStudent.studentId, exerciseId:qs[0].exerciseId, answers:`Kahoot式挑戰完成：${score}分，共${qs.length}題`, score:`${score} pts`, feedback:'遊戲化練習自動記錄', correction:'', reviewed:true, submitDate:new Date().toISOString() });
+            body.innerHTML=`<div style="text-align:center;padding:32px;"><div style="font-size:64px;">🏆</div><h2>挑戰完成！</h2><p style="font-size:28px;font-weight:900;color:#4f46e5;margin:16px 0;">${score} pts</p><button class="btn btn-game" id="playAgainBtn">再玩一次</button></div>`;
+            body.querySelector('#playAgainBtn').onclick=()=>openKahootMode(exercises);
+            renderSubjectDetails(currentSubject);
+        }
+        render();
+    }
+    function openFlashcardMode(exercises) {
+        const qs=flattenStudyQuestions(exercises).filter(q=>String(q.answer||'').trim()).slice(0,40);
+        if(!qs.length){alert('沒有可翻面的答案題。'); return;}
+        const {body}=makeStudyModal('🃏 Quizlet 式閃卡');
+        let i=0, flipped=false, known=0;
+        function render(){
+            const q=qs[i];
+            body.innerHTML=`<div class="pill">${i+1}/${qs.length}</div><div class="pill">已掌握 ${known}</div>
+            <div class="flashcard" id="flashCard">${escapeHtml(flipped ? (q.answer||'') : (q.text||''))}<div style="font-size:13px;color:#64748b;margin-top:12px;">${flipped?'答案':'點擊翻面'}</div></div>
+            <div class="flex" style="justify-content:center;margin-top:18px;"><button class="btn btn-outline" id="prevFlash">上一張</button><button class="btn btn-flash" id="knowFlash">我會了</button><button class="btn" id="nextFlash">下一張</button></div>`;
+            body.querySelector('#flashCard').onclick=()=>{flipped=!flipped; render();};
+            body.querySelector('#prevFlash').onclick=()=>{i=Math.max(0,i-1);flipped=false;render();};
+            body.querySelector('#nextFlash').onclick=()=>{i=(i+1)%qs.length;flipped=false;render();};
+            body.querySelector('#knowFlash').onclick=()=>{known++; i=(i+1)%qs.length; flipped=false; render();};
+        }
+        render();
+    }
+    function openMatchMode(exercises) {
+        let pairs=flattenStudyQuestions(exercises).filter(q=>String(q.answer||'').trim()).slice(0,8).map((q,idx)=>({id:idx,q:q.text,a:String(q.answer)}));
+        if(pairs.length<2){alert('至少需要 2 題有答案的題目才能玩配對。'); return;}
+        const {body}=makeStudyModal('🧩 配對遊戲');
+        let cards=[...pairs.map(p=>({id:p.id,kind:'q',text:p.q})),...pairs.map(p=>({id:p.id,kind:'a',text:p.a}))].sort(()=>Math.random()-.5);
+        let selected=[], done=new Set(), moves=0;
+        function render(){
+            body.innerHTML=`<div class="pill">步數 ${moves}</div><div class="pill">完成 ${done.size}/${pairs.length}</div><div class="match-grid" id="matchGrid"></div>`;
+            const grid=body.querySelector('#matchGrid');
+            cards.forEach((c,idx)=>{ const b=document.createElement('button'); b.className='match-card'; if(done.has(c.id)) b.classList.add('done'); if(selected.find(x=>x.idx===idx)) b.classList.add('selected'); b.innerHTML=escapeHtml(c.text); b.disabled=done.has(c.id); b.onclick=()=>pick(c,idx); grid.appendChild(b); });
+            if(done.size===pairs.length){ body.innerHTML=`<div style="text-align:center;padding:30px"><div style="font-size:60px">🎉</div><h2>全部配對完成！</h2><p>共用了 ${moves} 步。</p></div>`; }
+        }
+        function pick(card,idx){
+            if(selected.find(x=>x.idx===idx)) return; selected.push({card,idx});
+            if(selected.length===2){ moves++; const [a,b]=selected; if(a.card.id===b.card.id && a.card.kind!==b.card.kind){ done.add(a.card.id); selected=[]; render(); } else { render(); setTimeout(()=>{selected=[];render();},650); } }
+            else render();
+        }
+        render();
+    }
+
+    function parseVocabText(raw) {
+        return String(raw || '').split(/\r?\n/).map(line => line.trim()).filter(Boolean).map(line => {
+            let parts = line.split(/\s*(?:\t|::|：|:|－|-|—|=)\s*/);
+            if(parts.length < 2) return null;
+            let term = parts.shift().trim();
+            let definition = parts.join(' - ').trim();
+            return term && definition ? {term, definition} : null;
+        }).filter(Boolean);
+    }
+    function addVocabSet(subject, title, cards, targetStudentIds = [], sourceNoteId = null) {
+        if(!Array.isArray(cards) || !cards.length) return false;
+        db.vocabSets = Array.isArray(db.vocabSets) ? db.vocabSets : [];
+        db.vocabSets.push({ id: Date.now(), subject, title, sourceNoteId, cards, targetStudentIds, createdAt: new Date().toISOString() });
+        syncStorage();
+        return true;
+    }
+    function getVocabSetsForSubject(subject) {
+        if(!currentStudent) return [];
+        db.vocabSets = Array.isArray(db.vocabSets) ? db.vocabSets : [];
+        return db.vocabSets.filter(v => v.subject === subject && isPublishedToStudent(v, currentStudent.studentId) && Array.isArray(v.cards) && v.cards.length);
+    }
+    function flattenVocabCards(vocabSets) {
+        let cards=[];
+        (vocabSets || []).forEach(set => (set.cards || []).forEach(c => {
+            if(c && String(c.term || '').trim() && String(c.definition || '').trim()) cards.push({...c, setTitle:set.title, setId:set.id});
+        }));
+        return cards.sort(()=>Math.random()-.5);
+    }
+    function openVocabFlashcardMode(vocabSets) {
+        const cards = flattenVocabCards(vocabSets).slice(0,80);
+        if(!cards.length){ alert('沒有可用的單詞卡。'); return; }
+        const {body}=makeStudyModal('🃏 單詞閃卡 Flashcards');
+        let i=0, flipped=false, known=0;
+        function render(){
+            const c=cards[i];
+            body.innerHTML=`<div class="pill">${i+1}/${cards.length}</div><div class="pill">已掌握 ${known}</div><div class="pill">${escapeHtml(c.setTitle || '')}</div>
+            <div class="flashcard" id="vocabFlashCard">${escapeHtml(flipped ? c.definition : c.term)}<div style="font-size:13px;color:#64748b;margin-top:12px;">${flipped?'定義 / 解釋':'點擊翻面'}</div></div>
+            <div class="flex" style="justify-content:center;margin-top:18px;"><button class="btn btn-outline" id="prevVocabFlash">上一張</button><button class="btn btn-flash" id="knowVocabFlash">我會了</button><button class="btn" id="nextVocabFlash">下一張</button></div>`;
+            body.querySelector('#vocabFlashCard').onclick=()=>{flipped=!flipped; render();};
+            body.querySelector('#prevVocabFlash').onclick=()=>{i=Math.max(0,i-1);flipped=false;render();};
+            body.querySelector('#nextVocabFlash').onclick=()=>{i=(i+1)%cards.length;flipped=false;render();};
+            body.querySelector('#knowVocabFlash').onclick=()=>{known++; i=(i+1)%cards.length; flipped=false; render();};
+        }
+        render();
+    }
+    function openVocabMatchMode(vocabSets) {
+        let pairs=flattenVocabCards(vocabSets).slice(0,10).map((c,idx)=>({id:idx,q:c.term,a:c.definition}));
+        if(pairs.length<2){ alert('至少需要 2 組單詞和定義才能玩配對。'); return; }
+        const {body}=makeStudyModal('🧩 單詞配對 Match');
+        let cards=[...pairs.map(p=>({id:p.id,kind:'q',text:p.q})),...pairs.map(p=>({id:p.id,kind:'a',text:p.a}))].sort(()=>Math.random()-.5);
+        let selected=[], done=new Set(), moves=0;
+        function render(){
+            body.innerHTML=`<div class="pill">步數 ${moves}</div><div class="pill">完成 ${done.size}/${pairs.length}</div><div class="match-grid" id="vocabMatchGrid"></div>`;
+            const grid=body.querySelector('#vocabMatchGrid');
+            cards.forEach((c,idx)=>{ const b=document.createElement('button'); b.className='match-card'; if(done.has(c.id)) b.classList.add('done'); if(selected.find(x=>x.idx===idx)) b.classList.add('selected'); b.innerHTML=escapeHtml(c.text); b.disabled=done.has(c.id); b.onclick=()=>pick(c,idx); grid.appendChild(b); });
+            if(done.size===pairs.length){ body.innerHTML=`<div style="text-align:center;padding:30px"><div style="font-size:60px">🎉</div><h2>全部配對完成！</h2><p>共用了 ${moves} 步。</p></div>`; }
+        }
+        function pick(card,idx){
+            if(selected.find(x=>x.idx===idx)) return; selected.push({card,idx});
+            if(selected.length===2){ moves++; const [a,b]=selected; if(a.card.id===b.card.id && a.card.kind!==b.card.kind){ done.add(a.card.id); selected=[]; render(); } else { render(); setTimeout(()=>{selected=[];render();},650); } }
+            else render();
+        }
+        render();
+    }
+    function openVocabQuizMode(vocabSets) {
+        const cards = flattenVocabCards(vocabSets).slice(0,20);
+        if(cards.length<2){ alert('至少需要 2 組單詞和定義才能生成測驗。'); return; }
+        const {body}=makeStudyModal('📝 單詞測驗 Test');
+        let i=0, score=0, answered=false;
+        function render(){
+            answered=false;
+            const c=cards[i];
+            const useMC = cards.length >= 4 && Math.random() > .35;
+            let html=`<div class="pill">第 ${i+1}/${cards.length} 題</div><div class="pill">分數 ${score}</div><h2 style="margin:20px 0;">${escapeHtml(c.term)}</h2><p style="color:#64748b;font-weight:800;">請選出或寫出正確定義：</p><div id="vocabQuizArea"></div><div id="vocabQuizFeedback" style="font-weight:900;margin-top:12px;"></div>`;
+            body.innerHTML=html;
+            const area=body.querySelector('#vocabQuizArea');
+            if(useMC){
+                let opts=[c.definition, ...cards.filter(x=>x.definition!==c.definition).slice(0,12).sort(()=>Math.random()-.5).slice(0,3).map(x=>x.definition)].sort(()=>Math.random()-.5);
+                opts.forEach(opt=>{ const b=document.createElement('button'); b.className='quiz-option'; b.textContent=opt; b.onclick=()=>check(opt,b); area.appendChild(b); });
+            } else {
+                area.innerHTML=`<input id="vocabTypedAnswer" placeholder="輸入定義 / 解釋"><button class="btn btn-flash" id="submitVocabTyped">提交</button>`;
+                body.querySelector('#submitVocabTyped').onclick=()=>check(body.querySelector('#vocabTypedAnswer').value);
+            }
+        }
+        function check(val, btn){
+            if(answered) return; answered=true;
+            const c=cards[i];
+            const ok=String(val||'').trim().toLowerCase()===String(c.definition||'').trim().toLowerCase();
+            if(ok){score++; if(btn) btn.classList.add('correct'); body.querySelector('#vocabQuizFeedback').innerHTML='✅ 正確！';}
+            else { if(btn) btn.classList.add('wrong'); body.querySelector('#vocabQuizFeedback').innerHTML=`❌ 正確答案：${escapeHtml(c.definition)}`; }
+            setTimeout(()=>{ i++; if(i<cards.length) render(); else finish(); },1000);
+        }
+        function finish(){
+            body.innerHTML=`<div style="text-align:center;padding:32px;"><div style="font-size:64px;">🏅</div><h2>單詞測驗完成！</h2><p style="font-size:28px;font-weight:900;color:#4f46e5;margin:16px 0;">${score}/${cards.length}</p><button class="btn btn-flash" id="vocabQuizAgain">再測一次</button></div>`;
+            body.querySelector('#vocabQuizAgain').onclick=()=>openVocabQuizMode(vocabSets);
+        }
+        render();
+    }
+
+    function extractDriveFileId(url) {
+        const s = String(url || '');
+        let m = s.match(/\/file\/d\/([^/]+)/) || s.match(/[?&]id=([^&]+)/) || s.match(/\/document\/d\/([^/]+)/) || s.match(/\/presentation\/d\/([^/]+)/);
+        return m ? m[1] : '';
+    }
+    async function ocrNoteToText(note) {
+        if(!note || !note.driveLink) throw new Error('這份筆記沒有 Google Drive 連結。');
+        const fileId = extractDriveFileId(note.driveLink);
+        if(!fileId) throw new Error('無法從 Google Drive 連結讀取 fileId，請確認是標準分享連結。');
+        const json = await cloudRequest({ action:'ocrDriveFile', fileId, fileUrl:note.driveLink, language:'zh-TW,en' });
+        return json.text || '';
+    }
+    function suggestVocabPairsFromOcrText(text) {
+        const lines = String(text || '').split(/\r?\n/).map(x=>x.trim()).filter(Boolean);
+        const out = [];
+        // 1) 優先保留本來已經是「詞 - 解釋」的行
+        lines.forEach(line => {
+            const parsed = parseVocabText(line);
+            if(parsed.length) parsed.forEach(p=>out.push(p));
+        });
+        // 2) 從常見詞表格式中抓取：英文詞 + 中文/英文解釋
+        if(out.length < 3) {
+            lines.forEach(line => {
+                let m = line.match(/^([A-Za-z][A-Za-z\s'’-]{1,40})\s+([\u4e00-\u9fff].{1,80})$/);
+                if(m) out.push({term:m[1].trim(), definition:m[2].trim()});
+            });
+        }
+        // 3) 去重與清理
+        const seen = new Set();
+        return out.filter(p=>{
+            const key=(p.term+'|'+p.definition).toLowerCase();
+            if(seen.has(key)) return false;
+            seen.add(key);
+            return p.term.length<=80 && p.definition.length<=160;
+        }).slice(0,120).map(p=>`${p.term} - ${p.definition}`).join('\n');
+    }
+
+    function showVocabSetBuilder() {
+        db.vocabSets = Array.isArray(db.vocabSets) ? db.vocabSets : [];
+        const notesOptions = db.notes.map(n=>`<option value="${n.id}">【${escapeHtml(n.subject)}】${escapeHtml(n.title)}</option>`).join('');
+        let html=`<h4>🃏 建立單詞學習集</h4>
+        <p style="font-size:13px;color:#64748b;line-height:1.7;">Quizlet 類閃卡現在不再根據練習題生成，而是根據筆記或老師手動輸入的「單詞＋定義」生成。每行一組，例如：<b>photosynthesis - 光合作用</b>。</p>
+        <input id="vocabSubject" placeholder="學科，例如 英文 / 中文 / 科學" value="${escapeHtml(currentSubject || '英文')}">
+        <input id="vocabTitle" placeholder="學習集名稱，例如 P5 Unit 3 Vocabulary">
+        <label>從哪份筆記生成（選填）</label><select id="vocabNoteSelect"><option value="">不指定筆記，手動輸入</option>${notesOptions}</select>
+        <div class="flex" style="margin:8px 0 12px;"><button type="button" class="btn btn-outline btn-sm" id="loadNoteDescToVocab">把所選筆記的說明載入下方</button><button type="button" class="btn btn-flash btn-sm" id="ocrNoteToVocab">OCR讀取筆記文字</button></div><div id="ocrVocabStatus" style="font-size:13px;color:#64748b;margin-bottom:8px;"></div>
+        <div class="vocab-input-hint">格式：每行一組，可用 <b>-</b>、<b>：</b>、<b>::</b>、<b>Tab</b> 分隔。也可以先按「OCR讀取筆記文字」，系統會把 Google Drive PDF / 圖片轉成文字，再盡量整理成詞卡格式。<br>例：<br>happy - feeling pleased<br>氣候：某地長時間的天氣狀況</div>
+        <textarea id="vocabCardsText" rows="12" placeholder="在這裏輸入單詞和定義，每行一組"></textarea>
+        ${studentPickerHtml('vocab')}
+        <button class="btn btn-flash" id="saveVocabSetBtn">建立單詞學習集</button>
+        <h4 style="margin-top:22px;">已建立的學習集</h4><div id="existingVocabSets"></div>`;
+        document.getElementById('adminDynamicArea').innerHTML=html;
+        bindTargetSelectAll('vocab');
+        function renderExisting(){
+            let box=document.getElementById('existingVocabSets');
+            if(!db.vocabSets.length){ box.innerHTML='<p>暫無單詞學習集。</p>'; return; }
+            box.innerHTML=db.vocabSets.slice().reverse().map(v=>`<div class="record-item"><b>【${escapeHtml(v.subject)}】${escapeHtml(v.title)}</b><br><small>${(v.cards||[]).length} 張卡｜${v.createdAt?new Date(v.createdAt).toLocaleString():''}</small><br><button class="btn btn-sm danger-btn deleteVocabSetBtn" data-id="${v.id}">刪除此學習集</button></div>`).join('');
+            box.querySelectorAll('.deleteVocabSetBtn').forEach(btn=>btn.onclick=()=>{ let id=parseInt(btn.getAttribute('data-id')); if(confirm('確定刪除此單詞學習集？')){ db.vocabSets=db.vocabSets.filter(v=>v.id!==id); syncStorage(); renderExisting(); } });
+        }
+        renderExisting();
+        document.getElementById('loadNoteDescToVocab').onclick=()=>{
+            let id=parseInt(document.getElementById('vocabNoteSelect').value);
+            let note=db.notes.find(n=>n.id===id);
+            if(!note){ alert('請先選擇一份筆記。'); return; }
+            document.getElementById('vocabSubject').value=note.subject||'';
+            document.getElementById('vocabTitle').value=note.title ? `${note.title}｜單詞閃卡` : '';
+            document.getElementById('vocabCardsText').value=note.description || '';
+            alert('已載入筆記說明。若原筆記說明不是「單詞 - 定義」格式，請在下方整理後再建立。');
+        };
+        document.getElementById('ocrNoteToVocab').onclick=async()=>{
+            let id=parseInt(document.getElementById('vocabNoteSelect').value);
+            let note=db.notes.find(n=>n.id===id);
+            const status=document.getElementById('ocrVocabStatus');
+            if(!note){ alert('請先選擇一份 Google Drive 筆記。'); return; }
+            document.getElementById('vocabSubject').value=note.subject||'';
+            document.getElementById('vocabTitle').value=note.title ? `${note.title}｜OCR單詞閃卡` : '';
+            status.innerHTML='⏳ 正在用 Apps Script OCR 讀取 Google Drive 筆記，PDF 或圖片較大時需要等一等……';
+            try{
+                const text=await ocrNoteToText(note);
+                if(!text.trim()) throw new Error('OCR 沒有讀取到文字。請確認檔案清晰、權限為知道連結的人可檢視，或改用 Google Docs / PDF。');
+                const suggested=suggestVocabPairsFromOcrText(text);
+                document.getElementById('vocabCardsText').value = suggested || text;
+                status.innerHTML=`✅ OCR 完成，已讀取約 ${text.length} 個字。${suggested ? '已嘗試整理成「單詞 - 定義」格式，請檢查後再建立。' : '未能自動整理成詞卡，已貼入原始 OCR 文字，請手動整理。'}`;
+            }catch(err){
+                status.innerHTML='⚠️ OCR 失敗：'+escapeHtml(err.message || err);
+                alert('OCR 失敗：' + (err.message || err));
+            }
+        };
+        document.getElementById('saveVocabSetBtn').onclick=()=>{
+            let subject=document.getElementById('vocabSubject').value.trim();
+            let title=document.getElementById('vocabTitle').value.trim();
+            let raw=document.getElementById('vocabCardsText').value;
+            let cards=parseVocabText(raw);
+            let noteId=document.getElementById('vocabNoteSelect').value ? parseInt(document.getElementById('vocabNoteSelect').value) : null;
+            let targets=getSelectedTargetStudentIds('vocab');
+            if(!subject || !title){ alert('請填寫學科和學習集名稱。'); return; }
+            if(!cards.length){ alert('沒有讀取到有效單詞。請按「單詞 - 定義」格式，每行輸入一組。'); return; }
+            addVocabSet(subject,title,cards,targets,noteId);
+            alert(`已建立 ${cards.length} 張單詞卡，可在學生端使用閃卡、配對和測驗模式。`);
+            showVocabSetBuilder();
+        };
+    }
+
+    function showLearningAnalytics() {
+        let rows=db.students.map(stu=>{
+            let assigned=db.exercises.filter(e=>isPublishedToStudent(e,stu.studentId)).length;
+            let done=db.exercises.filter(e=>isPublishedToStudent(e,stu.studentId) && latestSubmissionFor(stu.studentId,e.id)).length;
+            let reviewed=db.submissions.filter(s=>s.studentId===stu.studentId && s.reviewed).length;
+            let pct=assigned?Math.round(done/assigned*100):0;
+            return {...stu, assigned, done, reviewed, pct};
+        }).sort((a,b)=>b.pct-a.pct || b.done-a.done);
+        let html=`<h4>🏆 學習數據／排行榜</h4><p style="color:#64748b;font-size:13px;">依學生完成比例排序，方便老師快速查看誰需要跟進。</p>`;
+        rows.forEach((r,idx)=>{html+=`<div class="record-item"><b>${idx+1}. ${escapeHtml(r.name)} (${r.studentId})</b><div class="pill">完成 ${r.done}/${r.assigned}</div><div class="pill">已批改 ${r.reviewed}</div><div class="pill">${r.pct}%</div><div class="progress-bar"><div class="progress-fill" style="width:${r.pct}%"></div></div></div>`;});
+        document.getElementById('adminDynamicArea').innerHTML=html;
+    }
+        function renderSubjectDetails(subject) {
+        const container = document.getElementById("subjectContentArea");
+        if(!currentStudent) return;
+        let notes = db.notes.filter(n => n.subject === subject && isPublishedToStudent(n, currentStudent.studentId));
+        let allExercises = db.exercises.filter(e => e.subject === subject && isPublishedToStudent(e, currentStudent.studentId));
+        let pendingExercises = allExercises.filter(ex => !latestSubmissionFor(currentStudent.studentId, ex.id));
+        let completedExercises = allExercises.map(ex => ({ ex, sub: latestSubmissionFor(currentStudent.studentId, ex.id) })).filter(x => x.sub);
+        let html = `${renderLearningDashboard(subject)}<div class="learning-tabs"><button class="learning-tab active">今日任務</button><button class="learning-tab">筆記</button><button class="learning-tab">已完成</button></div><div class="split-pane"><div class="left-col"><h4>📒 學習資料庫</h4>`;
+        if(notes.length===0) html+= `<p>暫無筆記</p>`;
+        notes.forEach(n => {
+            html+= `<div class="note-item"><div class="pill">${escapeHtml(n.subject)}</div><strong>${escapeHtml(n.title)}</strong>`;
+            if(n.driveLink) html+= `<div class="note-actions"><button type="button" class="btn btn-sm open-note-btn" data-noteid="${n.id}">📖 網頁內打開</button><a href="${escapeHtml(normalizeDriveDownloadUrl(n.driveLink))}" target="_blank" download class="file-link">⬇️ 下載到本地</a></div>`;
+            if(n.description) html+= `<div style="font-size:14px; margin-top:8px;line-height:1.7;">📝 ${escapeHtml(n.description)}</div>`;
+            html+= `<small>${new Date(n.uploadDate).toLocaleString()}</small>`;
+            if(n.gameQuizId) {
+                let quiz = db.exercises.find(e=>e.id === n.gameQuizId);
+                if(quiz && !latestSubmissionFor(currentStudent.studentId, quiz.id)) html+= `<div style="background:#fef9c3; border-radius:16px; padding:8px; margin-top:8px;">🎮 內建趣味小測驗：<button class="btn btn-sm btn-game" data-exid="${quiz.id}">開始</button></div>`;
+            }
+            html+= `</div>`;
+        });
+        html+= `</div><div class="right-col"><h4>🚀 今日待完成任務</h4>`;
+        if(pendingExercises.length===0) html+= `<div class="record-item" style="background:#ecfdf5;border-left:4px solid #10b981;"><b>太好了！今天沒有待完成練習。</b><br><span style="color:#64748b;">可以用上方的閃卡、配對或挑戰模式做複習。</span></div>`;
+        pendingExercises.forEach(ex => {
+            let qsCount = extractQuestionsForStudy(ex).length;
+            html+= `<div class="exercise-item"><div><span class="pill">${typeLabel(ex.type)}</span>${qsCount?`<span class="pill">${qsCount} 題可遊戲化</span>`:''}</div><strong style="font-size:17px;">📌 ${escapeHtml(ex.title)}</strong><br>
+                    <button class="btn btn-sm" data-exid="${ex.id}" style="margin-top:10px;">開始練習</button>
+                    ${qsCount?`<button class="btn btn-sm btn-game" data-single-kahoot="${ex.id}" style="margin-top:10px;">挑戰</button>`:''}</div>`;
+        });
+        html+= `<h4 style="margin-top:22px;">✅ 已完成／老師回饋</h4>`;
+        if(completedExercises.length===0) html+= `<p>暫無已完成記錄</p>`;
+        completedExercises.forEach(({ex, sub}) => {
+            let submittedHtml = formatSubmittedAnswers(sub);
+            if(sub.reviewed) {
+                html += `<div class="record-item" style="background:#ecfdf5;border-left:4px solid #10b981;"><b>${escapeHtml(ex.title)}</b><br><div style="margin-top:8px;"><b>我的提交答案：</b>${submittedHtml}</div><div style="margin-top:8px;"><b>分數：</b>${sub.score ?? '未填分'}</div>${sub.feedback ? `<div><b>老師評語：</b>${escapeHtml(sub.feedback)}</div>` : ''}${sub.correction ? `<div><b>需要改正：</b>${escapeHtml(sub.correction)}</div>` : ''}<small>${sub.reviewedAt ? '批改時間：'+new Date(sub.reviewedAt).toLocaleString() : ''}</small></div>`;
+            } else {
+                html += `<div class="record-item" style="background:#fff7ed;border-left:4px solid #f97316;"><b>${escapeHtml(ex.title)}</b><br><div style="margin-top:8px;"><b>我的提交答案：</b>${submittedHtml}</div><div style="margin-top:8px;color:#92400e;">已提交，等待老師批改。</div></div>`;
+            }
+        });
+        html+= `</div></div>`;
+        container.innerHTML = html;
+        document.getElementById('cloudStatusText') && (document.getElementById('cloudStatusText').innerText = lastCloudStatus || '已同步');
+        bindLearningModeButtons(subject);
+        document.querySelectorAll('.open-note-btn').forEach(btn => btn.addEventListener('click', () => {
+            const note = db.notes.find(n => n.id === parseInt(btn.getAttribute('data-noteid')));
+            if(note) openNotePreview(note);
+        }));
+        document.querySelectorAll('[data-exid]').forEach(btn => btn.addEventListener('click', () => { let exercise = db.exercises.find(e=>e.id === parseInt(btn.getAttribute('data-exid'))); if(exercise) openExerciseModal(exercise); }));
+        document.querySelectorAll('[data-single-kahoot]').forEach(btn => btn.addEventListener('click', () => { let exercise = db.exercises.find(e=>e.id === parseInt(btn.getAttribute('data-single-kahoot'))); if(exercise) openKahootMode([exercise]); }));
+        document.querySelectorAll('[data-single-flash]').forEach(btn => btn.addEventListener('click', () => { let exercise = db.exercises.find(e=>e.id === parseInt(btn.getAttribute('data-single-flash'))); if(exercise) openFlashcardMode([exercise]); }));
+        document.querySelectorAll('[data-vocab-flash]').forEach(btn => btn.addEventListener('click', () => { let set = (db.vocabSets||[]).find(v=>v.id === parseInt(btn.getAttribute('data-vocab-flash'))); if(set) openVocabFlashcardMode([set]); }));
+        document.querySelectorAll('[data-vocab-match]').forEach(btn => btn.addEventListener('click', () => { let set = (db.vocabSets||[]).find(v=>v.id === parseInt(btn.getAttribute('data-vocab-match'))); if(set) openVocabMatchMode([set]); }));
+        document.querySelectorAll('[data-vocab-quiz]').forEach(btn => btn.addEventListener('click', () => { let set = (db.vocabSets||[]).find(v=>v.id === parseInt(btn.getAttribute('data-vocab-quiz'))); if(set) openVocabQuizMode([set]); }));
+    }
+
+
+    function openExerciseModal(exercise) {
+        try { return openExerciseModalCore(exercise); }
+        catch(err) {
+            console.error(err);
+            alert("開啟練習時出錯：" + (err && err.message ? err.message : err));
+        }
+    }
+
+    function openExerciseModalCore(exercise) {
+        const modalDiv = document.createElement('div');
+        modalDiv.style.position = 'fixed'; modalDiv.style.top='0'; modalDiv.style.left='0'; modalDiv.style.width='100%'; modalDiv.style.height='100%';
+        modalDiv.style.backgroundColor='rgba(0,0,0,0.5)'; modalDiv.style.display='flex'; modalDiv.style.alignItems='center'; modalDiv.style.justifyContent='center'; modalDiv.style.zIndex='1000';
+        const modalContent = document.createElement('div');
+        modalContent.style.backgroundColor='white'; modalContent.style.width='90%'; modalContent.style.maxWidth='900px'; modalContent.style.maxHeight='85vh'; modalContent.style.overflow='auto';
+        modalContent.style.borderRadius='28px'; modalContent.style.padding='24px';
+        modalDiv.appendChild(modalContent);
+        document.body.appendChild(modalDiv);
+        function closeModal() { modalDiv.remove(); }
+
+        if(exercise.type === 'game_quiz') {
+            let qs = exercise.config.questions || [];
+            let answers = exercise.config.answers || [];
+            let innerHtml = `<h3>🎮 ${escapeHtml(exercise.title)}</h3><form id="gameForm">`;
+            qs.forEach((q, idx) => {
+                innerHtml += `<div style="margin-bottom:20px;"><p><strong>${idx+1}. ${q.text}</strong></p>`;
+                (q.options || []).forEach(opt => { innerHtml += `<label><input type="radio" name="q${idx}" value="${opt}"> ${opt}</label><br>`; });
+                innerHtml += `</div>`;
+            });
+            innerHtml += `<button type="submit" class="btn">提交答案</button></form>`;
+            modalContent.innerHTML = innerHtml;
+            modalContent.querySelector('#gameForm').addEventListener('submit', (e) => {
+                e.preventDefault();
+                let score = 0;
+                qs.forEach((_,i) => { let selected = document.querySelector(`input[name="q${i}"]:checked`); if(selected && selected.value === answers[i]) score++; });
+                addSubmission({ studentId:currentStudent.studentId, exerciseId:exercise.id, answers: "遊戲測驗", score:`${score}/${qs.length}`, feedback:'自動批改', correction:'', reviewed:true, submitDate:new Date().toISOString() });
+                alert(`得分: ${score}/${qs.length}`);
+                closeModal();
+                renderSubjectDetails(currentSubject);
+            });
+            return;
+        }
+        if(exercise.type === 'interactive_mixed' || exercise.type === 'choice' || exercise.type === 'drive_file') {
+            const isDriveOnly = exercise.type === 'drive_file';
+            let qs = buildAnswerSheetQuestions(exercise);
+            let sourceLink = isDriveOnly ? (exercise.config.driveLink || '') : (exercise.config.sourceDriveLink || exercise.config.driveLink || '');
+            let previewUrl = normalizeDrivePreviewUrl(sourceLink);
+            modalContent.classList.add('workbench-modal');
+            let desc = (exercise.config && exercise.config.description) || '';
+            let leftPane = sourceLink ? `<iframe src="${escapeHtml(previewUrl)}" allow="autoplay"></iframe>` : `<div style="height:100%;display:grid;place-items:center;color:white;text-align:center;padding:24px;"><div><h3>未提供 Google Drive PDF 連結</h3><p>右邊仍可作答；如要左側顯示 PDF，請在教師後台填入 Google Drive 題目 PDF 連結。</p></div></div>`;
+            modalContent.innerHTML = `<div class="workbench-head"><div><h3>📝 ${escapeHtml(exercise.title)}</h3><p style="color:#64748b;font-size:13px;margin-top:3px;">左邊看 Google Drive PDF 題目，右邊直接填寫答題紙。</p></div><button id="closeWorkbenchBtn" class="btn btn-outline btn-sm">關閉</button></div>
+                <div class="workbench-body">
+                    <section class="pdf-pane"><div style="display:flex;justify-content:space-between;gap:8px;align-items:center;color:white;font-weight:900;"><span>📄 題目 PDF</span>${sourceLink ? `<a href="${escapeHtml(sourceLink)}" target="_blank" style="color:white;text-decoration:underline;">新分頁開啟</a>` : ''}</div>${leftPane}</section>
+                    <section class="answer-pane"><div class="answer-paper-title"><h3>✍️ 答題紙</h3>${desc ? `<p style="color:#64748b;font-size:13px;line-height:1.6;">${escapeHtml(desc)}</p>` : ''}</div><form id="answerSheetForm">${renderAnswerSheetHtml(qs)}<button type="submit" class="btn">提交答題紙</button> <button type="button" id="saveDraftBtn" class="btn btn-outline">暫存本機</button></form></section>
+                </div>`;
+            initDrawingBoards(modalContent);
+            modalContent.querySelector('#closeWorkbenchBtn').addEventListener('click', closeModal);
+            modalContent.querySelector('#saveDraftBtn').addEventListener('click',()=>{
+                const collected = collectAnswerSheetResponses(modalContent, qs);
+                localStorage.setItem(`draft_${currentStudent.studentId}_${exercise.id}`, JSON.stringify(collected.responses));
+                alert('已暫存在本機瀏覽器；正式提交後才會交給老師。');
+            });
+            modalContent.querySelector('#answerSheetForm').addEventListener('submit', (e) => {
+                e.preventDefault();
+                const collected = collectAnswerSheetResponses(modalContent, qs);
+                addSubmission({ studentId:currentStudent.studentId, exerciseId:exercise.id, answers:JSON.stringify(collected.responses, null, 2), score:collected.autoScore, feedback:'', correction:'', reviewed:false, submitDate:new Date().toISOString() });
+                alert('已提交答題紙，學生端會隱藏此練習，等待老師批改後顯示分數與需要改正的地方。');
+                closeModal();
+                renderSubjectDetails(currentSubject);
+            });
+            return;
+        }
+        // 其他類型（聽力、朗讀等）保持原有簡單處理
+        if(exercise.type === 'listening_cn' || exercise.type === 'listening_en') {
+            let rawAudioUrl = exercise.config.audioUrl || exercise.config.driveAudioLink || "";
+            let audioUrl = normalizeDriveAudioUrl(rawAudioUrl);
+            let questions = exercise.config.questionsList || [];
+            let innerHtml = `<h3>${escapeHtml(exercise.title)}</h3>
+                <p style="font-size:13px;color:#64748b;">如播放器未能載入，請點擊下方「開啟音檔」播放。</p>
+                <audio controls src="${escapeHtml(audioUrl)}" style="width:100%;"></audio>
+                <p><a href="${escapeHtml(rawAudioUrl)}" target="_blank" class="file-link">🎧 開啟 Google Drive 音檔</a></p><div>`;
+            questions.forEach((q,idx)=>{
+                innerHtml+=`<p>${idx+1}. ${escapeHtml(q.text)}</p><input type="text" id="listenAns${idx}" placeholder="你的答案"><br>`;
+            });
+            innerHtml+=`<button id="submitListen" class="btn">提交聽力答案</button></div>`;
+            modalContent.innerHTML = innerHtml;
+            modalContent.querySelector('#submitListen').addEventListener('click',()=>{
+                let ans=[];
+                questions.forEach((_,idx)=>ans.push(modalContent.querySelector(`#listenAns${idx}`).value));
+                addSubmission({ studentId:currentStudent.studentId, exerciseId:exercise.id, answers:JSON.stringify(ans), score:null, submitDate:new Date().toISOString() });
+                alert("聽力答案已提交，請等待老師批改。");
+                closeModal();
+                renderSubjectDetails(currentSubject);
+            });
+            return;
+        }
+        if(exercise.type === 'reading_aloud') {
+            let material = exercise.config.readingText;
+            let innerHtml = `<h3>${escapeHtml(exercise.title)}</h3><div style="background:#f8fafc;padding:14px;border-radius:16px;line-height:1.8;white-space:pre-wrap;">${escapeHtml(material)}</div>`;
+            innerHtml += `<div style="margin-top:14px;"><button id="startRecordBtn" class="btn">🎙️ 開始錄音</button> <button id="stopRecordBtn" class="btn-outline btn" disabled>停止並上傳</button></div>`;
+            innerHtml += `<div id="recordingStatus" style="margin-top:10px;">準備就緒</div><div id="scoreDisplay" style="margin-top:10px;"></div>`;
+            modalContent.innerHTML = innerHtml;
+            let mediaRecorder, audioChunks=[];
+            let startBtn = modalContent.querySelector('#startRecordBtn');
+            let stopBtn = modalContent.querySelector('#stopRecordBtn');
+            let statusDiv = modalContent.querySelector('#recordingStatus');
+            let scoreDiv = modalContent.querySelector('#scoreDisplay');
+            startBtn.onclick = async ()=>{
+                try {
+                    let stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                    mediaRecorder = new MediaRecorder(stream);
+                    audioChunks=[];
+                    mediaRecorder.ondataavailable = event => audioChunks.push(event.data);
+                    mediaRecorder.onstop = async ()=>{
+                        statusDiv.innerText = "正在上傳到老師 Google Drive...";
+                        let audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+                        let localAudioUrl = URL.createObjectURL(audioBlob);
+                        let transcript = "";
+                        let scoreVal = null;
+                        try {
+                            const result = await uploadRecordingToDrive(audioBlob, exercise, transcript, scoreVal);
+                            addSubmission({
+                                studentId:currentStudent.studentId,
+                                exerciseId:exercise.id,
+                                answers:`朗讀錄音已上傳至 Google Drive：${result.fileUrl}`,
+                                score:scoreVal,
+                                audioUrl:result.fileUrl,
+                                driveFileId:result.fileId,
+                                submitDate:new Date().toISOString()
+                            });
+                            scoreDiv.innerHTML = `✅ 已上傳：<a href="${escapeHtml(result.fileUrl)}" target="_blank" class="file-link">打開錄音</a>`;
+                            alert("朗讀錄音已上傳到老師 Google Drive");
+                            closeModal();
+                        } catch(err) {
+                            addSubmission({ studentId:currentStudent.studentId, exerciseId:exercise.id, answers:`本機暫存錄音：${err.message}`, score:null, audioUrl:localAudioUrl, submitDate:new Date().toISOString() });
+                            scoreDiv.innerHTML = `⚠️ ${escapeHtml(err.message)}<br><audio controls src="${localAudioUrl}"></audio>`;
+                            alert("未能上傳到 Google Drive，已暫存在本機記錄。請檢查 Apps Script 網址與權限。");
+                        }
+                        stream.getTracks().forEach(track=>track.stop());
+                    };
+                    mediaRecorder.start();
+                    statusDiv.innerText = "錄音中...";
+                    startBtn.disabled = true;
+                    stopBtn.disabled = false;
+                } catch(err) {
+                    alert("無法使用麥克風，請檢查瀏覽器權限。" + err.message);
+                }
+            };
+            stopBtn.onclick = ()=>{
+                if(mediaRecorder && mediaRecorder.state !== 'inactive') mediaRecorder.stop();
+                statusDiv.innerText = "處理中...";
+                stopBtn.disabled = true;
+            };
+            return;
+        }
+        // 預設
+        modalContent.innerHTML = `<h3>${escapeHtml(exercise.title)}</h3><p>此練習類型需在後台完整設定。</p><button class="btn" onclick="this.closest('div').remove()">關閉</button>`;
+    }
+
+    // ---------- 教師後台 (Google Drive 版本) ----------
+    let adminAuthenticated = false;
+    function requireAdmin(callback) {
+        if(adminAuthenticated) { callback(); return; }
+        let pwd = prompt("請輸入教師後台密碼:");
+        if(pwd === "309418") { adminAuthenticated = true; callback(); }
+        else { alert("密碼錯誤"); }
+    }
+
+    function renderAdminStudents() {
+        let html = `<h4>管理學生學科＆姓名</h4>`;
+        db.students.forEach(stu => {
+            let allSub = (stu.gradeType === '小學' ? primarySubjects : secondarySubjects);
+            html += `<div style="border:1px solid #ddd;margin:12px;padding:12px;border-radius:20px;">
+                        <div class="flex" style="justify-content:space-between;">
+                            <b>學號：${stu.studentId}</b>
+                            <div>姓名：<input type="text" id="name_${stu.studentId}" value="${escapeHtml(stu.name)}" style="width:150px;">
+                            <button class="btn-sm updateNameBtn" data-sid="${stu.studentId}">修改姓名</button></div>
+                        </div>
+                        <div>當前學科：${stu.subjects.join(', ')}</div>
+                        <div class="flex" style="margin-top:10px;">`;
+            allSub.forEach(sub => {
+                let checked = stu.subjects.includes(sub) ? 'checked' : '';
+                html += `<label><input type="checkbox" class="subCheck" data-sid="${stu.studentId}" value="${sub}" ${checked}> ${sub}</label> `;
+            });
+            html += `</div><button class="btn-sm updateSubBtn" data-sid="${stu.studentId}" style="margin-top:10px;">儲存學科修改</button></div>`;
+        });
+        document.getElementById("adminDynamicArea").innerHTML = html;
+        document.querySelectorAll('.updateNameBtn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                let sid = btn.getAttribute('data-sid');
+                let newName = document.getElementById(`name_${sid}`).value.trim();
+                if(newName) { updateStudentName(sid, newName); alert("姓名已更新"); renderAdminStudents(); if(currentStudent && currentStudent.studentId===sid) document.getElementById("studentNameSpan").innerText = newName; }
+                else alert("不可空白");
+            });
+        });
+        document.querySelectorAll('.updateSubBtn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                let sid = btn.getAttribute('data-sid');
+                let selected = Array.from(document.querySelectorAll(`.subCheck[data-sid="${sid}"]:checked`)).map(cb=>cb.value);
+                updateStudentSubjects(sid, selected); alert("學科已更新"); if(currentStudent && currentStudent.studentId===sid) renderStudentSubjects(); renderAdminStudents();
+            });
+        });
+    }
+
+    function showUploadNoteUI() {
+        let html = `<div><h4>上傳筆記 (Google Drive 共用連結)</h4>
+        <p style="font-size:13px; color:#555;">📌 請先在 Google Drive 將檔案設為「知道連結的人可檢視」，然後貼上分享連結。</p>
+        <input id="noteSubject" placeholder="學科 (例如 中文)">
+        <input id="noteTitle" placeholder="標題">
+        <input id="noteDriveLink" placeholder="Google Drive 共用連結">
+        <textarea id="noteDescription" rows="2" placeholder="補充說明 (選填)"></textarea>
+        ${studentPickerHtml('note')}
+        <label><input type="checkbox" id="autoGameCheckbox"> 自動生成趣味遊戲 (根據說明欄內容，會發布給同一批學生)</label><br>
+        <button id="saveNoteBtn" class="btn">儲存筆記</button></div>`;
+        document.getElementById("adminDynamicArea").innerHTML = html;
+        bindTargetSelectAll('note');
+        document.getElementById("saveNoteBtn")?.addEventListener('click', () => {
+            let sub = document.getElementById("noteSubject").value.trim();
+            let title = document.getElementById("noteTitle").value.trim();
+            let link = document.getElementById("noteDriveLink").value.trim();
+            let desc = document.getElementById("noteDescription").value.trim();
+            let autoGame = document.getElementById("autoGameCheckbox").checked;
+            let targets = getSelectedTargetStudentIds('note');
+            if(!sub || !title || !link) { alert("請填寫學科、標題與 Google Drive 連結"); return; }
+            addNote(sub, title, link, desc, autoGame, targets);
+            alert("筆記已儲存並按指定學生發布！");
+        });
+    }
+
+    function manageNotesTitle() {
+        let html = `<h4>修改筆記標題</h4><div id="notesListForEdit"></div>`;
+        document.getElementById("adminDynamicArea").innerHTML = html;
+        let container = document.getElementById("notesListForEdit");
+        db.notes.forEach(note => {
+            let div = document.createElement("div");
+            div.className = "record-item";
+            div.innerHTML = `<strong>【${note.subject}】</strong> 原標題: ${escapeHtml(note.title)} <input type="text" id="newTitle_${note.id}" value="${escapeHtml(note.title)}"><button class="btn-sm" data-id="${note.id}">儲存</button>`;
+            container.appendChild(div);
+            div.querySelector('button').addEventListener('click', () => {
+                let newTitle = document.getElementById(`newTitle_${note.id}`).value;
+                if(newTitle.trim()) { updateNoteTitle(note.id, newTitle); alert("標題已更新"); manageNotesTitle(); }
+            });
+        });
+    }
+
+    function showSubmissions() {
+        let recs = [...db.submissions].reverse();
+        let html = `<h4>提交記錄與批改</h4>`;
+        if(recs.length===0) html += `<p>暫無提交。</p>`;
+        recs.forEach(r => {
+            let stu = db.students.find(s=>s.studentId===r.studentId) || {name:r.studentId};
+            let ex = db.exercises.find(e=>e.id===r.exerciseId) || {title:"未知"};
+            let audioHtml = r.audioUrl ? `<br><audio controls src="${escapeHtml(normalizeDriveAudioUrl(r.audioUrl))}" style="width:100%;max-width:520px;"></audio><br><a class="file-link" target="_blank" href="${escapeHtml(r.audioUrl)}">🔗 開啟 Google Drive 錄音</a>` : '';
+            html += `<div class="record-item"><b>${escapeHtml(stu.name)}</b> - ${escapeHtml(ex.title)} ${r.reviewed ? '<span style="color:#16a34a;">（已批改）</span>' : '<span style="color:#ea580c;">（待批改）</span>'}<br>
+                <div style="margin-top:8px;"><b>答案/提交內容：</b>${formatSubmittedAnswers(r)}</div>
+                目前分數：${r.score??'待批閱'}<br><small>${r.submitDate ? new Date(r.submitDate).toLocaleString() : ''}</small>${audioHtml}
+                <div style="margin-top:10px;background:white;border-radius:14px;padding:10px;">
+                    <label>分數：<input id="score_${r.id}" value="${escapeHtml(r.score ?? '')}" placeholder="例如 85/100 或 A" style="max-width:180px;"></label>
+                    <label>老師評語：<textarea id="feedback_${r.id}" rows="2" placeholder="整體表現、優點等">${escapeHtml(r.feedback || '')}</textarea></label>
+                    <label>需要改正：<textarea id="correction_${r.id}" rows="2" placeholder="需要重做、改正或補交的地方">${escapeHtml(r.correction || '')}</textarea></label>
+                    <button class="btn btn-sm reviewBtn" data-rid="${r.id}">儲存批改並顯示給學生</button>
+                </div>
+            </div>`;
+        });
+        document.getElementById("adminDynamicArea").innerHTML = html;
+        document.querySelectorAll('.reviewBtn').forEach(btn => {
+            btn.addEventListener('click',()=>{
+                let rid = parseInt(btn.getAttribute('data-rid'));
+                let score = document.getElementById(`score_${rid}`).value.trim();
+                let feedback = document.getElementById(`feedback_${rid}`).value.trim();
+                let correction = document.getElementById(`correction_${rid}`).value.trim();
+                updateSubmissionReview(rid, score, feedback, correction);
+                alert('已儲存批改，學生端會顯示分數／評語／需要改正。');
+                showSubmissions();
+            });
+        });
+    }
+
+    function uploadChoiceFile() {
+        let html = `<div><h4>上傳選擇題CSV</h4>
+        <input id="choiceSubject" placeholder="學科 (例如 中文/英文/數學)" value="中文">
+        ${studentPickerHtml('choice')}
+        <input type="file" id="choiceCsvFile" accept=".csv,.txt"><button id="parseChoiceBtn" class="btn">解析生成練習</button></div>`;
+        document.getElementById("adminDynamicArea").innerHTML = html;
+        bindTargetSelectAll('choice');
+        document.getElementById("parseChoiceBtn")?.addEventListener('click',()=>{
+            let file = document.getElementById("choiceCsvFile").files[0];
+            let subject = document.getElementById("choiceSubject").value.trim() || '通用';
+            let targets = getSelectedTargetStudentIds('choice');
+            if(!file) return;
+            let reader = new FileReader();
+            reader.onload = function(e){
+                let lines = e.target.result.split("\n");
+                let questions=[], answers=[];
+                for(let line of lines){
+                    let parts = line.split(",");
+                    if(parts.length>=6){
+                        questions.push({text:parts[0], options:parts.slice(1,5)});
+                        answers.push(parts[5].trim());
+                    }
+                }
+                addExercise({ subject, title:"批量選擇題-"+Date.now(), type:"choice", config:{questions, answers}, targetStudentIds: targets });
+                alert("已生成選擇題練習並按指定學生發布");
+            };
+            reader.readAsText(file);
+        });
+    }
+
+    function uploadRichExercise() {
+        let html = `<div><h4>上傳／轉換互動練習</h4>
+        <p style="font-size:13px; color:#555;line-height:1.7;">📌 Google Drive 文檔會作為「原始材料連結」保留；要在網頁內直接作答，請在下方貼互動題 JSON。支援：選擇題、是非題、填充題、問答題、資料題。</p>
+        <input id="richSubject" placeholder="學科">
+        <input id="richTitle" placeholder="練習名稱">
+        <input id="richDriveLink" placeholder="Google Drive 原始練習文檔連結（選填，但建議保留）">
+        <textarea id="richDescription" rows="2" placeholder="練習說明（選填）"></textarea>
+        <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:16px;padding:12px;margin:10px 0;">
+            <b>互動題目 JSON</b>
+            <p style="font-size:13px;color:#64748b;margin:6px 0;">可直接上傳 .json / .txt 題目檔，或手動貼上 JSON。留空 = 只建立 Google Drive 練習連結；有 JSON = 生成學生可直接在網頁作答的互動練習。</p>
+            <div class="flex" style="align-items:flex-end;margin:8px 0;">
+                <div style="flex:1;min-width:240px;">
+                    <label style="font-size:13px;color:#475569;">上傳互動題目檔（.json / .txt）</label>
+                    <input type="file" id="interactiveJsonFile" accept=".json,.txt,application/json,text/plain">
+                </div>
+                <button id="loadInteractiveFileBtn" type="button" class="btn btn-outline btn-sm">讀取題目檔</button>
+                <button id="clearInteractiveJsonBtn" type="button" class="btn btn-outline btn-sm">清空題目</button>
+            </div>
+            <div id="interactiveJsonFileStatus" style="font-size:13px;color:#64748b;margin:4px 0;"></div>
+            <button id="fillSampleInteractiveBtn" type="button" class="btn btn-outline btn-sm">填入範例格式</button>
+            <textarea id="interactiveQuestionsJson" rows="12" placeholder='上傳 JSON 檔後會自動填入；也可直接貼上題目 JSON'></textarea>
+        </div>
+        ${studentPickerHtml('rich')}
+        <button id="createRichBtn" class="btn">建立練習</button></div>`;
+        document.getElementById("adminDynamicArea").innerHTML = html;
+        bindTargetSelectAll('rich');
+        document.getElementById("fillSampleInteractiveBtn")?.addEventListener('click',()=>{
+            document.getElementById("interactiveQuestionsJson").value = sampleInteractiveQuestionsJson();
+            document.getElementById("interactiveJsonFileStatus").innerText = "已填入範例 JSON，可直接修改後建立練習。";
+        });
+        document.getElementById("clearInteractiveJsonBtn")?.addEventListener('click',()=>{
+            document.getElementById("interactiveQuestionsJson").value = "";
+            const fileInput = document.getElementById("interactiveJsonFile");
+            if(fileInput) fileInput.value = "";
+            document.getElementById("interactiveJsonFileStatus").innerText = "已清空互動題目；若建立時仍留空，會改為普通 Google Drive 連結練習。";
+        });
+        document.getElementById("loadInteractiveFileBtn")?.addEventListener('click',()=>{
+            const fileInput = document.getElementById("interactiveJsonFile");
+            const status = document.getElementById("interactiveJsonFileStatus");
+            const file = fileInput && fileInput.files ? fileInput.files[0] : null;
+            if(!file) { alert("請先選擇 .json 或 .txt 題目檔"); return; }
+            const lowerName = file.name.toLowerCase();
+            if(!(lowerName.endsWith('.json') || lowerName.endsWith('.txt'))) {
+                alert("請上傳 .json 或 .txt 題目檔");
+                return;
+            }
+            const reader = new FileReader();
+            reader.onload = function(e){
+                const text = String(e.target.result || '').trim();
+                if(!text) { alert("題目檔內容是空的"); return; }
+                try {
+                    const questions = buildInteractiveQuestionsFromJson(text);
+                    if(!questions.length) { alert("題目檔內沒有有效題目"); return; }
+                    document.getElementById("interactiveQuestionsJson").value = text;
+                    status.innerText = `已讀取：${file.name}（${questions.length} 題）。確認無誤後可建立練習。`;
+                } catch(err) {
+                    alert("題目檔 JSON 格式不正確：" + err.message);
+                    status.innerText = `讀取失敗：${file.name}`;
+                }
+            };
+            reader.onerror = function(){ alert("讀取題目檔失敗，請重新選擇檔案"); };
+            reader.readAsText(file, 'utf-8');
+        });
+        document.getElementById("createRichBtn")?.addEventListener('click', () => {
+            let subject = document.getElementById("richSubject").value.trim();
+            let title = document.getElementById("richTitle").value.trim();
+            let link = document.getElementById("richDriveLink").value.trim();
+            let desc = document.getElementById("richDescription").value.trim();
+            let rawQuestions = document.getElementById("interactiveQuestionsJson").value.trim();
+            let targets = getSelectedTargetStudentIds('rich');
+            if(!subject || !title) { alert("請至少填寫學科與標題"); return; }
+            if(rawQuestions) {
+                try {
+                    let questions = buildInteractiveQuestionsFromJson(rawQuestions);
+                    if(questions.length === 0) { alert('互動題目不能為空'); return; }
+                    addExercise({ subject, title, type:'interactive_mixed', config:{ sourceDriveLink:link, description:desc, questions }, targetStudentIds: targets });
+                    alert("已建立網頁互動練習並按指定學生發布！");
+                } catch(e) {
+                    alert("題目 JSON 格式不正確：" + e.message);
+                }
+            } else {
+                if(!link) { alert("如不填互動題 JSON，必須提供 Google Drive 連結"); return; }
+                addExerciseFromDrive(subject, title, link, desc, targets);
+                alert("已建立 Google Drive 連結練習並按指定學生發布！");
+            }
+        });
+    }
+
+
+    function deleteNoteCompletely(noteId) {
+        let note = db.notes.find(n => n.id === noteId);
+        if(!note) return false;
+        if(note.gameQuizId) {
+            db.exercises = db.exercises.filter(e => e.id !== note.gameQuizId);
+            db.submissions = db.submissions.filter(s => s.exerciseId !== note.gameQuizId);
+        }
+        db.notes = db.notes.filter(n => n.id !== noteId);
+        syncStorage();
+        return true;
+    }
+
+    function manageAllDocuments() {
+        let html = `<h4>管理／刪除所有文檔</h4>
+        <p style="font-size:13px;color:#64748b;line-height:1.7;">這裡可以修改或刪除所有已發布內容：筆記、Google Drive 練習、互動練習、聽力、朗讀材料。刪除後學生端不再顯示；刪除練習會一併刪除該練習的提交記錄。</p>
+        <h4 style="margin-top:16px;">📒 筆記文檔</h4>`;
+        if(db.notes.length === 0) html += `<p>暫無筆記。</p>`;
+        db.notes.slice().reverse().forEach(note => {
+            let targetsText = (!note.targetStudentIds || note.targetStudentIds.length === 0) ? '所有擁有該學科的學生' : note.targetStudentIds.map(id => {
+                let stu = db.students.find(s=>s.studentId===id); return stu ? `${stu.name}(${id})` : id;
+            }).join('、');
+            html += `<div class="record-item">
+                <b>【${escapeHtml(note.subject)}】${escapeHtml(note.title)}</b><br>
+                <small>發布對象：${escapeHtml(targetsText)}｜上傳：${note.uploadDate ? new Date(note.uploadDate).toLocaleString() : ''}</small>
+                <label>標題</label><input id="docNoteTitle_${note.id}" value="${escapeHtml(note.title)}">
+                <label>Google Drive 連結</label><input id="docNoteLink_${note.id}" value="${escapeHtml(note.driveLink || '')}">
+                <label>說明</label><textarea id="docNoteDesc_${note.id}" rows="2">${escapeHtml(note.description || '')}</textarea>
+                <div class="flex">
+                    <button class="btn btn-sm saveNoteDocBtn" data-id="${note.id}">儲存修改</button>
+                    <button class="btn btn-sm danger-btn deleteNoteDocBtn" data-id="${note.id}">刪除此筆記</button>
+                </div>
+            </div>`;
+        });
+        html += `<h4 style="margin-top:20px;">✏️ 練習／聽力／朗讀文檔</h4>`;
+        if(db.exercises.length === 0) html += `<p>暫無練習。</p>`;
+        db.exercises.slice().reverse().forEach(ex => {
+            let link = (ex.config && (ex.config.driveLink || ex.config.sourceDriveLink || ex.config.driveAudioLink || ex.config.audioUrl)) || '';
+            let desc = (ex.config && ex.config.description) || '';
+            let targetsText = (!ex.targetStudentIds || ex.targetStudentIds.length === 0) ? '所有擁有該學科的學生' : ex.targetStudentIds.map(id => {
+                let stu = db.students.find(s=>s.studentId===id); return stu ? `${stu.name}(${id})` : id;
+            }).join('、');
+            let submittedCount = db.submissions.filter(s=>s.exerciseId===ex.id).length;
+            html += `<div class="record-item">
+                <b>【${escapeHtml(ex.subject)}】${escapeHtml(ex.title)}</b>（${typeLabel(ex.type)}）<br>
+                <small>發布對象：${escapeHtml(targetsText)}｜提交記錄：${submittedCount}｜建立：${ex.createdAt ? new Date(ex.createdAt).toLocaleString() : ''}</small>
+                <label>標題</label><input id="docExTitle_${ex.id}" value="${escapeHtml(ex.title)}">
+                <label>Google Drive / 音檔連結</label><input id="docExLink_${ex.id}" value="${escapeHtml(link)}">
+                <label>說明</label><textarea id="docExDesc_${ex.id}" rows="2">${escapeHtml(desc)}</textarea>
+                <div class="flex">
+                    <button class="btn btn-sm saveExerciseDocBtn" data-id="${ex.id}">儲存修改</button>
+                    <button class="btn btn-sm danger-btn deleteExerciseDocBtn" data-id="${ex.id}">刪除此練習/文檔</button>
+                </div>
+            </div>`;
+        });
+        document.getElementById("adminDynamicArea").innerHTML = html;
+        document.querySelectorAll('.saveNoteDocBtn').forEach(btn=>{
+            btn.addEventListener('click',()=>{
+                let id = parseInt(btn.getAttribute('data-id'));
+                let note = db.notes.find(n=>n.id===id);
+                if(!note) return;
+                note.title = document.getElementById(`docNoteTitle_${id}`).value.trim() || note.title;
+                note.driveLink = document.getElementById(`docNoteLink_${id}`).value.trim();
+                note.description = document.getElementById(`docNoteDesc_${id}`).value.trim();
+                syncStorage();
+                alert('筆記已更新。');
+                if(currentStudent) renderSubjectDetails(currentSubject);
+                manageAllDocuments();
+            });
+        });
+        document.querySelectorAll('.deleteNoteDocBtn').forEach(btn=>{
+            btn.addEventListener('click',()=>{
+                let id = parseInt(btn.getAttribute('data-id'));
+                let note = db.notes.find(n=>n.id===id);
+                if(confirm(`確定要刪除筆記「${note ? note.title : ''}」嗎？相關自動小測驗也會刪除。`)) {
+                    deleteNoteCompletely(id);
+                    alert('筆記已刪除。');
+                    if(currentStudent) renderSubjectDetails(currentSubject);
+                    manageAllDocuments();
+                }
+            });
+        });
+        document.querySelectorAll('.saveExerciseDocBtn').forEach(btn=>{
+            btn.addEventListener('click',()=>{
+                let id = parseInt(btn.getAttribute('data-id'));
+                let ex = db.exercises.find(e=>e.id===id);
+                if(!ex) return;
+                ex.title = document.getElementById(`docExTitle_${id}`).value.trim() || ex.title;
+                let link = document.getElementById(`docExLink_${id}`).value.trim();
+                let desc = document.getElementById(`docExDesc_${id}`).value.trim();
+                ex.config = ex.config || {};
+                ex.config.description = desc;
+                if(ex.type === 'drive_file') ex.config.driveLink = link;
+                else if(ex.type === 'interactive_mixed') ex.config.sourceDriveLink = link;
+                else if(ex.type === 'listening_cn' || ex.type === 'listening_en') { ex.config.audioUrl = link; ex.config.driveAudioLink = link; }
+                else ex.config.driveLink = link;
+                syncStorage();
+                alert('練習/文檔已更新。');
+                if(currentStudent) renderSubjectDetails(currentSubject);
+                manageAllDocuments();
+            });
+        });
+        document.querySelectorAll('.deleteExerciseDocBtn').forEach(btn=>{
+            btn.addEventListener('click',()=>{
+                let id = parseInt(btn.getAttribute('data-id'));
+                let ex = db.exercises.find(e=>e.id===id);
+                if(confirm(`確定要刪除「${ex ? ex.title : ''}」嗎？相關提交記錄也會刪除。`)) {
+                    deleteExerciseCompletely(id);
+                    alert('練習/文檔已刪除。');
+                    if(currentStudent) renderSubjectDetails(currentSubject);
+                    manageAllDocuments();
+                }
+            });
+        });
+    }
+
+    function managePublishedExercises() {
+        let html = `<h4>刪除／取消發布已發布練習</h4>
+        <p style="font-size:13px;color:#64748b;line-height:1.7;">「取消發布給指定學生」只會讓該學生端不再顯示；「完全刪除」會刪除該練習及相關提交記錄，請謹慎使用。</p>`;
+        if(db.exercises.length === 0) html += `<p>暫無練習。</p>`;
+        db.exercises.slice().reverse().forEach(ex => {
+            let targetsText = (!ex.targetStudentIds || ex.targetStudentIds.length === 0) ? '所有擁有該學科的學生' : ex.targetStudentIds.map(id => {
+                let stu = db.students.find(s=>s.studentId===id); return stu ? `${stu.name}(${id})` : id;
+            }).join('、');
+            let submittedCount = db.submissions.filter(s=>s.exerciseId===ex.id).length;
+            html += `<div class="record-item">
+                <b>【${escapeHtml(ex.subject)}】${escapeHtml(ex.title)}</b>（${typeLabel(ex.type)}）<br>
+                <small>發布對象：${escapeHtml(targetsText)}｜提交記錄：${submittedCount}｜建立：${ex.createdAt ? new Date(ex.createdAt).toLocaleString() : ''}</small>
+                <div style="margin-top:10px;background:white;border-radius:14px;padding:10px;">
+                    <div style="margin-bottom:8px;"><b>取消發布給指定學生：</b></div>
+                    ${studentPickerHtml('del_' + ex.id).replace(/發布給哪些學生？/, '選擇要取消發布的學生').replace(/不勾選任何學生 = 發布給所有擁有該學科的學生。/, '勾選後點擊下方按鈕，該學生端不再顯示此練習。')}
+                    <button class="btn btn-sm unpublishBtn" data-exid="${ex.id}">取消發布給已勾選學生</button>
+                    <button class="btn btn-sm danger-btn deleteExerciseBtn" data-exid="${ex.id}" style="margin-left:10px;">完全刪除此練習</button>
+                </div>
+            </div>`;
+        });
+        document.getElementById("adminDynamicArea").innerHTML = html;
+        db.exercises.forEach(ex => bindTargetSelectAll('del_' + ex.id));
+        document.querySelectorAll('.unpublishBtn').forEach(btn=>{
+            btn.addEventListener('click',()=>{
+                let exid = parseInt(btn.getAttribute('data-exid'));
+                let ids = getSelectedTargetStudentIds('del_' + exid);
+                if(ids.length === 0) { alert('請先勾選要取消發布的學生'); return; }
+                removeExerciseForStudents(exid, ids);
+                alert('已取消發布給指定學生。');
+                managePublishedExercises();
+                if(currentStudent) renderSubjectDetails(currentSubject);
+            });
+        });
+        document.querySelectorAll('.deleteExerciseBtn').forEach(btn=>{
+            btn.addEventListener('click',()=>{
+                let exid = parseInt(btn.getAttribute('data-exid'));
+                let ex = db.exercises.find(e=>e.id===exid);
+                if(confirm(`確定要完全刪除「${ex ? ex.title : ''}」嗎？相關提交記錄也會刪除。`)) {
+                    deleteExerciseCompletely(exid);
+                    alert('已完全刪除。');
+                    managePublishedExercises();
+                    if(currentStudent) renderSubjectDetails(currentSubject);
+                }
+            });
+        });
+    }
+
+
+    function deletePendingExercisesByStudentUI() {
+        let html = `<h4>刪除學生待完成練習</h4>
+        <p style="font-size:13px;color:#64748b;line-height:1.7;">這裡只處理「學生尚未提交」的練習。刪除後，該學生的待完成列表不再顯示；其他學生不受影響；已提交/已批改的記錄不會被刪除。</p>
+        <label><b>選擇學生</b></label>
+        <select id="pendingStudentSelect">
+            <option value="">請選擇學生</option>
+            ${db.students.map(stu=>`<option value="${stu.studentId}">${escapeHtml(stu.name)} (${stu.studentId})</option>`).join('')}
+        </select>
+        <div id="pendingExerciseList" style="margin-top:14px;"></div>`;
+        document.getElementById("adminDynamicArea").innerHTML = html;
+        const select = document.getElementById('pendingStudentSelect');
+        const list = document.getElementById('pendingExerciseList');
+        function renderPendingList() {
+            let sid = select.value;
+            if(!sid) { list.innerHTML = `<p style="color:#64748b;">請先選擇學生。</p>`; return; }
+            let stu = db.students.find(s=>s.studentId===sid);
+            let pending = getPendingExercisesForStudent(sid);
+            if(pending.length === 0) {
+                list.innerHTML = `<div class="record-item"><b>${stu ? escapeHtml(stu.name) : sid}</b> 目前沒有待完成練習。</div>`;
+                return;
+            }
+            let rows = `<div class="record-item" style="background:#fff7ed;border-left:4px solid #f97316;">
+                <b>${stu ? escapeHtml(stu.name) : sid}</b> 的待完成練習：${pending.length} 份<br>
+                <label style="display:inline-flex;align-items:center;gap:6px;margin-top:10px;"><input type="checkbox" id="selectAllPendingExercises"> 全選待完成練習</label>
+            </div>`;
+            pending.slice().reverse().forEach(ex=>{
+                rows += `<div class="record-item">
+                    <label style="display:flex;gap:10px;align-items:flex-start;">
+                        <input type="checkbox" class="pendingExerciseCheck" value="${ex.id}" style="width:auto;margin-top:4px;">
+                        <span><b>【${escapeHtml(ex.subject)}】${escapeHtml(ex.title)}</b>（${typeLabel(ex.type)}）<br>
+                        <small>建立：${ex.createdAt ? new Date(ex.createdAt).toLocaleString() : ''}</small></span>
+                    </label>
+                </div>`;
+            });
+            rows += `<button class="btn danger-btn" id="deleteSelectedPendingBtn">刪除所選待完成練習</button>`;
+            list.innerHTML = rows;
+            document.getElementById('selectAllPendingExercises')?.addEventListener('change', e=>{
+                document.querySelectorAll('.pendingExerciseCheck').forEach(cb=>cb.checked=e.target.checked);
+            });
+            document.getElementById('deleteSelectedPendingBtn')?.addEventListener('click', ()=>{
+                let ids = Array.from(document.querySelectorAll('.pendingExerciseCheck:checked')).map(cb=>parseInt(cb.value));
+                if(ids.length === 0) { alert('請先勾選要刪除的待完成練習'); return; }
+                if(!confirm(`確定要從 ${stu ? stu.name : sid} 的待完成列表刪除 ${ids.length} 份練習嗎？`)) return;
+                ids.forEach(exid => removeExerciseForStudents(exid, [sid]));
+                alert('已刪除所選待完成練習。');
+                renderPendingList();
+                if(currentStudent && currentStudent.studentId === sid) renderSubjectDetails(currentSubject);
+            });
+        }
+        select.addEventListener('change', renderPendingList);
+        renderPendingList();
+    }
+
+    function uploadListeningUI() {
+        let html = `<div><h4>上傳聽力（Google Drive 音檔連結）</h4>
+        <p style="font-size:13px;color:#555;">流程：老師把音檔上傳到 Google Drive → 權限設為「知道連結的人可檢視」→ 在這裡貼上分享連結。學生端會直接顯示播放器，跨裝置可用。</p>
+        <select id="listenLang"><option value="listening_cn">中文聆聽</option><option value="listening_en">英文聆聽</option></select>
+        <input id="listenSubject" placeholder="學科 (中文/英文)" value="中文">
+        <input id="listenTitle" placeholder="標題">
+        <input id="audioDriveLink" placeholder="Google Drive 音檔分享連結">
+        <textarea id="listenQuestions" rows="5" placeholder='題目JSON，例如 [{"text":"問題1"},{"text":"問題2"}]'></textarea>
+        ${studentPickerHtml('listen')}
+        <button id="createListenBtn" class="btn">建立聽力練習</button></div>`;
+        document.getElementById("adminDynamicArea").innerHTML = html;
+        bindTargetSelectAll('listen');
+        document.getElementById("createListenBtn")?.addEventListener('click',()=>{
+            let type = document.getElementById("listenLang").value, title = document.getElementById("listenTitle").value.trim(), subject = document.getElementById("listenSubject").value.trim();
+            if(subject!=="中文" && subject!=="英文") { alert("學科須為中文或英文"); return; }
+            let audioLink = document.getElementById("audioDriveLink").value.trim();
+            let qJson = document.getElementById("listenQuestions").value.trim() || "[]";
+            let targets = getSelectedTargetStudentIds('listen');
+            if(audioLink && title){
+                try {
+                    let questionsList = JSON.parse(qJson);
+                    addExercise({ subject, title, type, config:{audioUrl:audioLink, driveAudioLink:audioLink, questionsList}, targetStudentIds: targets });
+                    alert("聽力練習已建立並按指定學生發布");
+                } catch(e) { alert("題目JSON格式不正確"); }
+            } else alert("請填寫標題與 Google Drive 音檔連結");
+        });
+    }
+
+    function showDriveSettingsUI() {
+        let html = `<div><h4>Google Drive 上傳設定</h4>
+        <p style="font-size:13px;color:#555;">此 Apps Script URL 現在同時負責：① 朗讀錄音上傳到老師 Google Drive；② 筆記、練習、發布對象、提交與批改資料跨裝置同步。</p>
+        <input id="gasUploadUrl" placeholder="Apps Script Web App URL" value="${escapeHtml(db.settings.gasUploadUrl || DEFAULT_GAS_UPLOAD_URL)}">
+        <button id="saveGasUrlBtn" class="btn">儲存上傳網址</button>
+        <button id="restoreGasUrlBtn" class="btn btn-outline" style="margin-left:8px;">恢復預設上傳網址</button>
+        <button id="manualLoadCloudBtn" class="btn btn-outline" style="margin-left:8px;">立即從雲端載入</button>
+        <button id="manualSaveCloudBtn" class="btn btn-outline" style="margin-left:8px;">立即保存到雲端</button>
+        <p style="font-size:13px;color:#64748b;margin-top:10px;">同步狀態：${escapeHtml(lastCloudStatus)}</p>
+        <p style="font-size:13px;color:#64748b;margin-top:4px;">第一次使用跨裝置版時，請把新版 Apps Script 後端代碼部署成 Web App，再把 URL 填在這裡。</p></div>`;
+        document.getElementById("adminDynamicArea").innerHTML = html;
+        document.getElementById("saveGasUrlBtn")?.addEventListener('click',()=>{
+            db.settings.gasUploadUrl = document.getElementById("gasUploadUrl").value.trim() || DEFAULT_GAS_UPLOAD_URL;
+            document.getElementById("gasUploadUrl").value = db.settings.gasUploadUrl;
+            syncStorage();
+            alert("已儲存 Apps Script 上傳網址");
+        });
+        document.getElementById("restoreGasUrlBtn")?.addEventListener('click',()=>{
+            db.settings.gasUploadUrl = DEFAULT_GAS_UPLOAD_URL;
+            document.getElementById("gasUploadUrl").value = DEFAULT_GAS_UPLOAD_URL;
+            syncStorage();
+            alert("已恢復預設 Apps Script 上傳網址");
+        });
+        document.getElementById("manualLoadCloudBtn")?.addEventListener('click', async()=>{
+            await loadCloudDB();
+            alert(lastCloudStatus);
+            showDriveSettingsUI();
+        });
+        document.getElementById("manualSaveCloudBtn")?.addEventListener('click', async()=>{
+            cloudSyncReady = true;
+            await saveCloudDB();
+            alert(lastCloudStatus);
+            showDriveSettingsUI();
+        });
+    }
+
+    function createAloudMaterial() {
+        let html = `<div><h4>朗讀材料</h4><select id="aloudLang"><option value="中文">中文朗讀</option><option value="英文">英文朗讀</option></select>
+        <input id="aloudTitle" placeholder="標題"><textarea id="aloudText" placeholder="朗讀原文"></textarea>
+        ${studentPickerHtml('aloud')}
+        <button id="saveAloudBtn" class="btn">儲存</button></div>`;
+        document.getElementById("adminDynamicArea").innerHTML = html;
+        bindTargetSelectAll('aloud');
+        document.getElementById("saveAloudBtn")?.addEventListener('click',()=>{
+            let sub = document.getElementById("aloudLang").value, title = document.getElementById("aloudTitle").value.trim(), text = document.getElementById("aloudText").value.trim();
+            let targets = getSelectedTargetStudentIds('aloud');
+            if(sub && title && text) {
+                addExercise({ subject:sub, title, type:"reading_aloud", config:{readingText:text}, targetStudentIds: targets });
+                alert("朗讀練習已建立並按指定學生發布");
+            } else alert("請填寫標題與朗讀原文");
+        });
+    }
+
+    function init() {
+        loadDB();
+        loadCloudDB();
+        document.getElementById("loginBtn").onclick = function() {
+            let sid = document.getElementById("studentIdInput").value.trim();
+            let stu = db.students.find(s => s.studentId === sid);
+            if(stu) {
+                currentStudent = stu;
+                document.getElementById("studentDashboard").style.display = "block";
+                document.getElementById("studentNameSpan").innerText = stu.name;
+                const av=document.getElementById("studentAvatar"); if(av) av.innerText=(stu.name||"P").slice(0,1).toUpperCase();
+                const cs=document.getElementById("cloudStatusText"); if(cs) cs.innerText=lastCloudStatus||"已同步";
+                renderStudentSubjects();
+            } else alert("學號不存在，請使用 S001 ~ S010");
+        };
+        const toggleBtn = document.getElementById("toggleAdminBtn");
+        const adminPanel = document.getElementById("adminPanel");
+        toggleBtn.onclick = function() {
+            if(adminPanel.style.display === "none") {
+                requireAdmin(() => {
+                    adminPanel.style.display = "block";
+                    renderAdminStudents();
+                });
+            } else {
+                adminPanel.style.display = "none";
+                adminAuthenticated = false;
+            }
+        };
+        document.querySelectorAll('.admin-action').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.preventDefault();
+                requireAdmin(() => {
+                    const action = btn.getAttribute('data-action');
+                    if(action === 'manageStudent') renderAdminStudents();
+                    else if(action === 'uploadNote') showUploadNoteUI();
+                    else if(action === 'manageNotes') manageNotesTitle();
+                    else if(action === 'manageAllDocuments') manageAllDocuments();
+                    else if(action === 'viewSubmissions') showSubmissions();
+                    else if(action === 'learningAnalytics') showLearningAnalytics();
+                    else if(action === 'vocabSets') showVocabSetBuilder();
+                    else if(action === 'uploadChoice') uploadChoiceFile();
+                    else if(action === 'uploadRich') uploadRichExercise();
+                    else if(action === 'managePublishedExercises') managePublishedExercises();
+                    else if(action === 'deletePendingByStudent') deletePendingExercisesByStudentUI();
+                    else if(action === 'uploadListening') uploadListeningUI();
+                    else if(action === 'createReading') createAloudMaterial();
+                    else if(action === 'driveSettings') showDriveSettingsUI();
+                });
+            });
+        });
+    }
+    init();
+</script>
+</body>
+</html>
